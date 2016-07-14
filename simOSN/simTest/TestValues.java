@@ -29,43 +29,44 @@ public class TestValues {
 				break;
 			case 0:
 				System.out.println("Exiting the system...\n Bye");
+				reader.close();
 				System.exit(0);
 			}
 		}
-        
+
 	}
 	//Dry run for Linear Distribution
 	public void linearDistributionDryRun(int network_size, double max, double min, double step){
 		double sum = 0.0;
-        double tmp;
-        System.out.println("####Linear distribution####");
+		double tmp;
+		System.out.println("####Linear distribution####");
 		for (int i = 0; i < network_size; ++i) {
-            tmp = i * step + min;
-            sum += tmp;
-            if(i<100){//Limiting display results upto 100 records for simplicity
-            	//System.out.println("i:"+i+",Step:"+step+",step part "+i*step);
-            	System.out.println("Node "+i+" Value is :"+ tmp);
-            	}
-        	}
-        System.out.println("Sum is "+sum+" and the average is "+sum/network_size );
+			tmp = i * step + min;
+			sum += tmp;
+			if(i<100){//Limiting display results unto 100 records for simplicity
+				//System.out.println("i:"+i+",Step:"+step+",step part "+i*step);
+				System.out.println("Node "+i+" Value is :"+ tmp);
+			}
+		}
+		System.out.println("Sum is "+sum+" and the average is "+sum/network_size );
 	}
-	
+
 	//Dry run for Peak Distribution
 	public void peakDistributionDryRun(int network_size, double value){
 		double sum = 0.0;
-        double tmp = 0.0;
-        System.out.println("####Peak distribution####");
-        for (int i = 0; i < network_size; i++) {
-        	sum += tmp;
-        	tmp = 0;
-        	if(i==0){
-        		tmp = value;
-        	}else{
-        		tmp = 0;
-        	}
-        	if(i<100)//Limiting display results upto 100 records for simplicity
-            System.out.println("Node "+i+" value: "+tmp);
-        }
-        System.out.println("Sum is "+sum+" and the average is "+sum/network_size );
+		double tmp = 0.0;
+		System.out.println("####Peak distribution####");
+		for (int i = 0; i < network_size; i++) {
+			sum += tmp;
+			tmp = 0;
+			if(i==0){
+				tmp = value;
+			}else{
+				tmp = 0;
+			}
+			if(i<100)//Limiting display results upto 100 records for simplicity
+				System.out.println("Node "+i+" value: "+tmp);
+		}
+		System.out.println("Sum is "+sum+" and the average is "+sum/network_size );
 	}
 }
