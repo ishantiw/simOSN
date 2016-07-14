@@ -6,4 +6,4 @@ The program is simple, you have to chose which distribution you want to run,
 - Enter 2 for Peak distribution and,
 - Enter 0 to exit
 
-You can always change the settings in [TestValues.java] (https://github.com/ishantiw/simOSN/blob/master/simOSN/simTest/TestValues.java) :+1:
+You can always change the settings in [TestValues.java] (https://github.com/ishantiw/simOSN/blob/master/simOSN/simTest/TestValues.java#L8#L9#L10#L12) :+1:
