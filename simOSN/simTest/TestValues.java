@@ -9,7 +9,7 @@ public class TestValues {
 		double max = 100.0;
 		double min = 1.0;
 		double step = (max - min) / (50000 - 1);
-		double peakValue = 10000.0;
+		double peakValue = 1000.0;
 		System.out.println("Network Size: "+network_size+"\nMax: "+max+"\nMin: "+min);
 		System.out.println("Step Value: "+ step+"\n");
 		TestValues test = new TestValues();
