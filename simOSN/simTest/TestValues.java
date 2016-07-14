@@ -11,7 +11,7 @@ public class TestValues {
 		double step = (max - min) / (50000 - 1);
 		double peakValue = 10000.0;
 		System.out.println("Network Size: "+network_size+"\nMax: "+max+"\nMin: "+min);
-		System.out.println("Value of Step is "+ step+"\n");
+		System.out.println("Step Value: "+ step+"\n");
 		TestValues test = new TestValues();
 		int option = 3;
 		while(option!=0){
