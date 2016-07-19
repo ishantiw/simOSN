@@ -1,0 +1,88 @@
+package dpvem;
+
+import peersim.core.Node;
+import peersim.core.OverlayNetwork;
+import peersim.config.Configuration;
+import peersim.reports.Observer;
+
+/**
+ */
+public class HealthTest implements Observer {
+
+
+// ===================== fields =======================================
+// ====================================================================
+
+/** 
+*  String name of the parameter used to select the protocol to operate on
+*/
+public static final String PAR_PROT = "protocol";
+  
+/** The name of this observer in the configuration */
+private final String name;
+
+private final int protocolID;
+
+
+// ===================== initialization ================================
+// =====================================================================
+
+
+public HealthTest(String name) {
+
+	this.name = name;
+	protocolID = Configuration.getPid(name+"."+PAR_PROT);
+}
+
+
+// ====================== methods ======================================
+// =====================================================================
+
+/** Method to check the consistency of the state of the network */
+public static String test(int protocolID) {
+	
+	int failOutLinks=0; // out link points to failed node
+	int corruptOrder=0; // outViewDate is wrong size or not ordered
+	
+	for(int i=0; i<OverlayNetwork.size(); ++i)
+	{
+		Node curr = OverlayNetwork.get(i);
+		OrderedDpvem currsc = (OrderedDpvem)
+			(curr.getProtocol(protocolID));
+		
+		// check out view
+		for(int j=0; j<currsc.viewlen; ++j)
+		{
+			Node out = (Node)currsc.view[j];
+			if(!out.isUp())
+			{
+				++failOutLinks;
+			}
+		}
+		
+		// check order
+		for(int j=1; j<currsc.viewlen; ++j)
+		{
+			if(currsc.values[j]<currsc.values[j-1])
+			{
+				++corruptOrder;
+				break;
+			}
+		}
+	}
+	
+	return ("failOutLinks="+failOutLinks+
+		" corruptOrder="+corruptOrder);
+}
+
+// --------------------------------------------------------------------
+
+public boolean analyze() {
+	
+	System.out.println(name+": "+HealthTest.test(protocolID));
+	
+	return false;
+}
+
+}
+
