@@ -9,4 +9,4 @@ The program is simple, you have to chose which distribution you want to run,
 You can always change the settings in [TestValues.java] (https://github.com/ishantiw/simOSN/blob/master/simOSN/simTest/TestValues.java#L8#L9#L10#L12) :+1:
 
 * Please add `peersim-0.3.jar` in your buildpath and remove `peersim-1.0.5.jar`, in order to run `oldPeerSim` source folder
-* Please add `peersim-1.0.5.jar` in your buildpath and remove `peersim-0.3.jar` in order to run `simTest` source folder
+* Please add `peersim-1.0.5.jar` in your buildpath and remove `peersim-0.3.jar` in order to run `simOSN` source folder
