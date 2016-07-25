@@ -1,3 +1,18 @@
+##############################################
+# Technische Universität Berlin
+# Author: Ishan Tiwari 
+# Year: 2016
+# Topic: Simulating Social Graph Overlays by Gossiping in Unstructured P2P Online Social Networks
+##############################################
+
+##############################################
+# Description: This script is extension to the Peer sampling service. 
+# We are choosing random graph among 3 bootstrapping scenarios because initial topology is is defined by a random graph 
+# and the views of the nodes are initialized by a uniform random sample of the peer nodes. 
+###############################################
+
+
+#To replicate exactly the experiment results based on (pseudo) random behavior
 random.seed 1234569890
 
 simulation.cycles 500
