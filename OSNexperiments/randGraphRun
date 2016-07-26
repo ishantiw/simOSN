@@ -31,8 +31,8 @@ protocol.0.pull
 dynamics.0 peersim.dynamics.GrowingNetwork
 dynamics.0.add -50
 dynamics.0.percentage
-dynamics.0.from 300
-dynamics.0.until 301
+dynamics.0.from 30
+dynamics.0.until 31
 
 init.0 WireRegularRandom
 init.0.degree 30
@@ -61,4 +61,10 @@ observer.4.protocol 0
 observer.5 dpvem.ValueDistribution
 observer.5.protocol 0
 
-
+##########Printing Graph Statistics########## 
+observer.6 peersim.reports.GraphStats
+observer.6.protocol 0
+#Average Path length: Number of nodes to use for sampling average path length
+observer.6.nl 200
+#Average Clustering: Number of nodes to use for sampling average path length
+observer.6.nc 200
