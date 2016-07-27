@@ -82,6 +82,9 @@ observer.6.nc 20
 ################################################
 observer.7 peersim.reports.BallExpansion
 observer.7.protocol 0
-observer.7.maxd 5
-observer.7.n 1000
+observer.7.maxd 8
+observer.7.n 3
 observer.7.stats
+
+######## WIP: Reports memory utilization (max, total and free) #########
+observer.8.memoryTest.MemoryObserver
