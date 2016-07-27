@@ -61,10 +61,27 @@ observer.4.protocol 0
 observer.5 dpvem.ValueDistribution
 observer.5.protocol 0
 
+##########Considering churn where 10% of the nodes leave the network########## 
+dynamics.0 peersim.dynamics.GrowingNetwork
+dynamics.0.add -10
+dynamics.0.percentage
+dynamics.0.from 5
+dynamics.0.until 10
+
 ##########Printing Graph Statistics########## 
 observer.6 peersim.reports.GraphStats
 observer.6.protocol 0
 #Average Path length: Number of nodes to use for sampling average path length
-observer.6.nl 200
-#Average Clustering: Number of nodes to use for sampling average path length
-observer.6.nc 200
+observer.6.nl 20
+#Average Clustering: Number of nodes to use for sampling average clustering coefficient
+observer.6.nc 20
+
+##########BallExpansion#########################
+#Number of nodes that are accessible from a given node in at most 1, 2, etc steps
+#Note: Nodes are not guaranteed to be the same nodes over consecutive calls to this method
+################################################
+observer.7 peersim.reports.BallExpansion
+observer.7.protocol 0
+observer.7.maxd 5
+observer.7.n 1000
+observer.7.stats
