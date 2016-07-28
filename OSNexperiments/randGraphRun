@@ -8,7 +8,7 @@
 ##############################################
 # Description: This script is extension to the Peer sampling service. 
 # We are choosing random graph among 3 bootstrapping scenarios because initial topology is is defined by a random graph 
-# and the views of the nodes are initialized by a uniform random sample of the peer nodes. 
+# and the views of the nodes are initialized by a uniform random sample of the peer nodes which suits our online social network scenario. 
 ###############################################
 
 
@@ -40,7 +40,7 @@ init.0.protocol 0
 
 observer.0 peersim.reports.DegreeStats
 observer.0.protocol 0
-observer.0.method stats
+observer.0.method list
 
 observer.1 peersim.reports.ConnectivityObserver
 observer.1.protocol 0
