@@ -3,6 +3,7 @@ package it.osn.core;
 import peersim.config.Configuration;
 import peersim.core.Control;
 import peersim.core.Network;
+import peersim.vector.SingleValue;
 
 public class OSNInitializer implements Control{
 	
@@ -36,13 +37,20 @@ public class OSNInitializer implements Control{
 		boolean flag = false;
 		for (int i = 0; i < Network.size(); i++) {
             SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
+            System.out.println("Max is "+max+"Min os "+min);
             int val = (int) (Math.random() * (max - min));
+            System.out.println("val is "+val);
             if(!flag){
             	flag =true;
             }else{
             	val += min;
             }
-            prot.initfriendSize(val);
+            if(prot == null){
+            	System.out.println("prot os null");
+            } else {
+            	System.out.println();
+                prot.interest = val;
+            }
         }
         return false;
 	}
