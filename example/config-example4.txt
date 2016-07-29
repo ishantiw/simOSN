@@ -2,7 +2,7 @@
 
 random.seed 1234567890
 
-simulation.cycles 5
+simulation.cycles 20
 
 control.shf Shuffle
 
@@ -18,7 +18,7 @@ protocol.osn.interest 8
 
 init.rnd WireKOut
 init.rnd.protocol lnk
-init.rnd.k 20
+init.rnd.k 3
 
 init.pk example.aggregation.PeakDistributionInitializer
 init.pk.value 10000
@@ -31,8 +31,8 @@ init.ld.min 1
 
 init.oinit it.osn.core.OSNInitializer
 init.oinit.protocol osn
-init.oinit.max 100
-init.oinit.min 1
+init.oinit.max 10
+init.oinit.min 2
 
 # you can change this to include the linear initializer instead
 include.init rnd oinit
