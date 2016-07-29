@@ -9,10 +9,10 @@ overlay.maxSize 10000
 protocol.0 dpvem.OrderedDpvem
 protocol.0.order hops
 protocol.0.c 30
-protocol.0.peerselect rand
+protocol.0.peerselect head
 protocol.0.viewselect rand
 protocol.0.push
-protocol.0.pull
+#protocol.0.pull
 
 dynamics.0 peersim.dynamics.GrowingNetwork
 dynamics.0.add 500

@@ -1,3 +1,18 @@
+##############################################
+# Technische Universität Berlin
+# Author: Ishan Tiwari 
+# Year: 2016
+# Topic: Simulating Social Graph Overlays by Gossiping in Unstructured P2P Online Social Networks
+##############################################
+
+##############################################
+# Description: This script is extension to the Peer sampling service. 
+# We are choosing random graph among 3 bootstrapping scenarios because initial topology is is defined by a random graph 
+# and the views of the nodes are initialized by a uniform random sample of the peer nodes which suits our online social network scenario. 
+###############################################
+
+
+#To replicate exactly the experiment results based on (pseudo) random behavior
 random.seed 1234569890
 
 simulation.cycles 500
@@ -5,30 +20,44 @@ simulation.shuffle
 
 overlay.size 10000
 
+#########dynamic partial view based epidemic membership protocol############
 protocol.0 dpvem.OrderedDpvem
+#########Ordering the view based on increasing hop count####################
 protocol.0.order hops
+#########config parameter name for the max view size########################
 protocol.0.c 30
-protocol.0.peerselect rand
+#########Defines how to select the peer from the view for communication#####
+protocol.0.peerselect ra d
+#########Defines how to create the new view from the merged two views#######
 protocol.0.viewselect rand
+#########For the push and pull##############################################
 protocol.0.push
 protocol.0.pull
 
+##########Considering churn where 50% of the nodes leave the network in one specific cycle##########
 dynamics.0 peersim.dynamics.GrowingNetwork
 dynamics.0.add -50
 dynamics.0.percentage
-dynamics.0.from 300
-dynamics.0.until 301
+dynamics.0.from 30
+dynamics.0.until 31
 
+##########adds random connections#############
 init.0 WireRegularRandom
 init.0.degree 30
 init.0.protocol 0
 
+######Prints several statistics about the node degrees in the graph########
 observer.0 peersim.reports.DegreeStats
 observer.0.protocol 0
+#observer.0.trace 10
 observer.0.method stats
 
+#########Reports statistics about connectivity properties of the network, such as weakly or strongly connected clusters#####
+#one line is printed that contains the string representation of a map, that holds cluster IDs mapped to cluster sizes#
 observer.1 peersim.reports.ConnectivityObserver
 observer.1.protocol 0
+#observer.1.sizestats
+observer.1.type scc
 
 observer.2 peersim.reports.GraphStats
 observer.2.protocol 0
@@ -46,4 +75,30 @@ observer.4.protocol 0
 observer.5 dpvem.ValueDistribution
 observer.5.protocol 0
 
+##########Considering churn where 10% of the nodes leave the network########## 
+dynamics.0 peersim.dynamics.GrowingNetwork
+dynamics.0.add -1
+dynamics.0.percentage
+dynamics.0.from 5
+dynamics.0.until 7
 
+##########Printing Graph Statistics########## 
+observer.6 peersim.reports.GraphStats
+observer.6.protocol 0
+#Average Path length: Number of nodes to use for sampling average path length
+observer.6.nl 20
+#Average Clustering: Number of nodes to use for sampling average clustering coefficient
+observer.6.nc 20
+
+##########BallExpansion#########################
+#Number of nodes that are accessible from a given node in at most 1, 2, etc steps
+#Note: Nodes are not guaranteed to be the same nodes over consecutive calls to this method
+################################################
+observer.7 peersim.reports.BallExpansion
+observer.7.protocol 0
+observer.7.maxd 8
+observer.7.n 3
+observer.7.stats
+
+######## WIP: Reports memory utilization (max, total and free) #########
+observer.8.memoryTest.MemoryObserver
