@@ -9,7 +9,7 @@ network.size 50000
  
 protocol.lnk IdleProtocol
 
-protocol.avg example.aggregation.AverageFunction
+protocol.avg it.osn.core.BasicBalance
 protocol.avg.linkable lnk
  
 init.rnd WireKOut
@@ -37,4 +37,5 @@ control.dnet.add 500
 control.dnet.from 15
 control.dnet.until 25
 
-
+control.my it.osn.core.UserProfileDissemination
+control.my.protocol avg

@@ -20,30 +20,44 @@ simulation.shuffle
 
 overlay.size 10000
 
+#########dynamic partial view based epidemic membership protocol############
 protocol.0 dpvem.OrderedDpvem
+#########Ordering the view based on increasing hop count####################
 protocol.0.order hops
+#########config parameter name for the max view size########################
 protocol.0.c 30
-protocol.0.peerselect rand
+#########Defines how to select the peer from the view for communication#####
+protocol.0.peerselect ra d
+#########Defines how to create the new view from the merged two views#######
 protocol.0.viewselect rand
+#########For the push and pull##############################################
 protocol.0.push
 protocol.0.pull
 
+##########Considering churn where 50% of the nodes leave the network in one specific cycle##########
 dynamics.0 peersim.dynamics.GrowingNetwork
 dynamics.0.add -50
 dynamics.0.percentage
 dynamics.0.from 30
 dynamics.0.until 31
 
+##########adds random connections#############
 init.0 WireRegularRandom
 init.0.degree 30
 init.0.protocol 0
 
+######Prints several statistics about the node degrees in the graph########
 observer.0 peersim.reports.DegreeStats
 observer.0.protocol 0
-observer.0.method list
+#observer.0.trace 10
+observer.0.method stats
 
+#########Reports statistics about connectivity properties of the network, such as weakly or strongly connected clusters#####
+#one line is printed that contains the string representation of a map, that holds cluster IDs mapped to cluster sizes#
 observer.1 peersim.reports.ConnectivityObserver
 observer.1.protocol 0
+#observer.1.sizestats
+observer.1.type scc
 
 observer.2 peersim.reports.GraphStats
 observer.2.protocol 0
@@ -63,10 +77,10 @@ observer.5.protocol 0
 
 ##########Considering churn where 10% of the nodes leave the network########## 
 dynamics.0 peersim.dynamics.GrowingNetwork
-dynamics.0.add -10
+dynamics.0.add -1
 dynamics.0.percentage
 dynamics.0.from 5
-dynamics.0.until 10
+dynamics.0.until 7
 
 ##########Printing Graph Statistics########## 
 observer.6 peersim.reports.GraphStats
