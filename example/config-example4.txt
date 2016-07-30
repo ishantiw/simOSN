@@ -2,7 +2,7 @@
 
 random.seed 1234567890
 
-simulation.cycles 20
+simulation.cycles 50
 
 control.shf Shuffle
 

@@ -21,7 +21,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	
 	protected String exp;
 	
-	/** Quota amount. Obtained from config property {@link #PAR_INTEREST}. */
+	/** Interest value. Obtained from config property {@link #PAR_INTEREST}. */
 	private final double interest_value;
 	
 	protected double interest;
@@ -35,8 +35,8 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		interest_value = (Configuration.getInt(prefix + "." + PAR_INTEREST, 1));
 		//get interest value from the config value
 		exp = Configuration.getString(prefix + "." + param_experiment);
-		UserData userdata = new UserData();
-		User =  new FriendCircle(userdata);
+		//UserData userdata = new UserData();
+		//User =  new FriendCircle(userdata);
 		interest = interest_value;
 		if(exp.equals("find")){//to identify different functions
 			System.out.println("Inside find");
@@ -44,6 +44,14 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		
 	}
 	
+	public FriendCircle getUser() {
+		return User;
+	}
+
+	public void setUser(FriendCircle user) {
+		User = user;
+	}
+
 	@Override
 	public void nextCycle(Node node, int protocolID) {
 		int linkableID = FastConfig.getLinkable(protocolID);
@@ -57,7 +65,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			continue;
 			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
 				neighbor = user;
-				System.out.println("User details is "+user.interest);
+				//System.out.println("User details is "+user.interest);
 				//System.out.println("####################found contact");
 			if(neighbor ==null)
 				return;
@@ -68,10 +76,15 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	protected void foundNeighbor(SocialNetworkCalculations neighbor){
 		//In this function we can perform other tasks like exchanging the value or updating etc.
 		//System.out.println("Inside found Neighbor");
-		System.out.println("Size is "+ this.interest+" and peer size is "+neighbor.interest);
-		boolean found = this.User.userdata.hobbies.contains(neighbor.User.userdata.hobbies);
+		//System.out.println("Size is "+ this.interest+" and peer size is "+neighbor.interest);
+		//System.out.println("-->>>Size of the hobbiees"+ this.User.userdata.hobbies);
+		//boolean found = this.User.userdata.hobbies.contains(neighbor.User.userdata.hobbies);
+		boolean found =  false;//System.out.println("usr sizze is "+this.User.size+"neighbor size is"+ neighbor.User.size);
+		if((this.User.size==555)&& (neighbor.User.size==555)){
+			found = true;
+		}
 		if(found){
-			System.out.println("Found Friend");
+			System.out.println("Found Friend"+this.User.size);
 		}
 	}
 	

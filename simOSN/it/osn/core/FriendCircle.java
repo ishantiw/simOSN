@@ -29,7 +29,7 @@ public class FriendCircle {
 
 	public FriendCircle(UserData userdata) {
 		super();
-		this.size = (int) (Math.random() * Network.size());
+		//this.size = (int) (Math.random() * Network.size());
 		this.userdata = userdata;
 	}
 	

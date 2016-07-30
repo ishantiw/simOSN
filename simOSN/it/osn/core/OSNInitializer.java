@@ -22,16 +22,16 @@ public class OSNInitializer implements Control{
     private final int max;
     /**  Minimum value of the random */
     private final int min;
-    private final FriendCircle friendCircle;
-    private final UserData userdata;
+    //private final FriendCircle friendCircle;
+    //private final UserData userdata;
     
 	public OSNInitializer(String prefix) {
 		super();
 		max = Configuration.getInt(prefix + "." + PAR_MAX);
         min = Configuration.getInt(prefix + "." + PAR_MIN);
         pid = Configuration.getPid(prefix + "." + PAR_PROT);
-        userdata = new UserData();
-        friendCircle = new FriendCircle(userdata);
+        //userdata = new UserData();
+        //friendCircle = new FriendCircle(userdata);
 	}
 
 	public FriendCircle circleInitializer(){
@@ -44,14 +44,23 @@ public class OSNInitializer implements Control{
 		boolean flag = false;
 		for (int i = 0; i < Network.size(); i++) {
             SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
+            UserData data = new UserData();
             int val = (int) (Math.random() * (max - min));
-            	val += min;//System.out.println("Valus are "+val);
-                prot.User.size = val;
+        	val += min;//System.out.println("Valus are "+val);
+            if(val%2==0)
+            	data.hobbies.add("BasketBall");
+            if(val%3==0)
+            	data.hobbies.add("Soccer");
+            FriendCircle circle = new FriendCircle(data);                
                 prot.interest = val;
-                if(val%2==0)
-                	prot.User.userdata.hobbies.add("BasketBall");
-                if(val%3==0)
-                	prot.User.userdata.hobbies.add("Soccer");
+                if(i == 2){
+                	circle.setSize(555);
+                } else if(i == 38){
+                	circle.setSize(555);
+                } else {
+                	circle.setSize(val);
+                }
+                prot.setUser(circle);
         }
         return false;
 	}
