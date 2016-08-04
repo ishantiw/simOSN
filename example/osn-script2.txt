@@ -1,15 +1,16 @@
 # PEERSIM EXAMPLE 2
 
-random.seed 1234567890
+#random.seed 1234567890
 
-simulation.cycles 50
+simulation.cycles 100
 
 control.shf Shuffle
 
-network.size 50
+network.size 5000
  
-protocol.lnk example.newscast.SimpleNewscast
-protocol.lnk.cache 20
+#protocol.lnk example.newscast.SimpleNewscast
+#protocol.lnk.cache 20
+protocol.lnk IdleProtocol
 
 protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
@@ -18,7 +19,8 @@ protocol.osn.interest 8
 
 init.rnd WireKOut
 init.rnd.protocol lnk
-init.rnd.k 3
+init.rnd.k 10
+init.rnd.undir true
 
 init.pk example.aggregation.PeakDistributionInitializer
 init.pk.value 10000

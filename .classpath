@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="D:/Eclipse Workspace/peersim-1.0.5/djep-1.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/Eclipse Workspace/peersim-1.0.5/jep-2.3.0.jar"/>
 	<classpathentry kind="lib" path="D:/Eclipse Workspace/peersim-1.0.5/peersim-1.0.5.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse Workspace/peer-sampling/dpvem.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

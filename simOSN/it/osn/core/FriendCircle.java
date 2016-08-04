@@ -3,7 +3,15 @@ import peersim.core.Network;
 
 public class FriendCircle {
 	public int size;
-	
+	public int flag;
+	public int getFlag() {
+		return flag;
+	}
+
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+
 	public UserData userdata;
 
 	public int getSize() {
@@ -20,7 +28,7 @@ public class FriendCircle {
 
 	@Override
 	public String toString() {
-		return "FriendCircle [size=" + size + ", user=" + userdata + "]";
+		return "FriendCircle [size=" + size + ", flag=" + flag + ", userdata=" + userdata + "]";
 	}
 
 	public void setUserdata(UserData user) {
@@ -31,6 +39,7 @@ public class FriendCircle {
 		super();
 		//this.size = (int) (Math.random() * Network.size());
 		this.userdata = userdata;
+		this.flag = 0;
 	}
 	
 	

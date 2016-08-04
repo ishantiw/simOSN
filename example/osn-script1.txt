@@ -1,0 +1,51 @@
+# OSN Experiment1 : Finding Friend
+
+#random.seed 1234567890
+
+simulation.cycles 50
+
+control.shf Shuffle
+
+network.size 5000
+ 
+#protocol.lnk example.newscast.SimpleNewscast
+#protocol.lnk.cache 20
+protocol.lnk IdleProtocol
+
+#Instantiates and update friend circle for nodes and compares the values with its neighbors, sets the greater value to neighbor 
+protocol.osn it.osn.core.SocialNetworkCalculations
+protocol.osn.linkable lnk
+protocol.osn.exp find
+protocol.osn.interest 8
+
+init.rnd WireKOut
+init.rnd.protocol lnk
+init.rnd.k 5
+init.rnd.undir true
+
+init.pk example.aggregation.PeakDistributionInitializer
+init.pk.value 10000
+init.pk.protocol osn
+
+init.ld LinearDistribution
+init.ld.protocol osn
+init.ld.max 100
+init.ld.min 1
+
+init.oinit it.osn.core.OSNInitializer
+init.oinit.protocol osn
+init.oinit.max 10
+init.oinit.min 2
+
+# you can change this to include the linear initializer instead
+include.init rnd oinit
+
+control.ao it.osn.core.UserProfileDissemination
+control.ao.protocol osn
+
+#control.dnet DynamicNetwork
+#control.dnet.add -500
+#control.dnet.minsize 45000
+#control.dnet.from 5
+#control.dnet.until 15
+ 
