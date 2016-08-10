@@ -9,6 +9,9 @@ import java.util.ListIterator;
 import java.util.Map;
 
 public class UserData {
+	double connectionSpeed;
+	int hopCount;
+	int offlineUsers;
 	protected Map<Long, Integer> neighbors = new HashMap<>();
 	protected List hobbies = new ArrayList();
 	protected Map<Long, Integer> oneHopFriends= new HashMap<>();

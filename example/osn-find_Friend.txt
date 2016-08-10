@@ -1,8 +1,8 @@
 # OSN Experiment1 : Finding Friend
 
-#random.seed 1234567890
+random.seed 1234567890
 
-simulation.cycles 50
+simulation.cycles 20
 
 control.shf Shuffle
 
@@ -17,6 +17,7 @@ protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
 protocol.osn.exp find
 protocol.osn.interest 8
+protocol.osn.type push
 
 init.rnd WireKOut
 init.rnd.protocol lnk
@@ -32,14 +33,16 @@ init.ld.protocol osn
 init.ld.max 100
 init.ld.min 1
 
+###Using OSN Initializer
 init.oinit it.osn.core.OSNInitializer
 init.oinit.protocol osn
 init.oinit.max 10
 init.oinit.min 2
 
-# you can change this to include the linear initializer instead
+# you can change this to include the linear or peak initializer instead of OSNInitializer
 include.init rnd oinit
 
+###Profile dissemination 
 control.ao it.osn.core.UserProfileDissemination
 control.ao.protocol osn
 

@@ -2,10 +2,12 @@ package it.osn.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
@@ -13,26 +15,38 @@ import peersim.config.FastConfig;
 import peersim.core.Linkable;
 import peersim.core.Node;
 import peersim.vector.SingleValueHolder;
-
+/**
+ * <h1>OSN SocialNetworkCalculations!</h1>
+ * This class implements the gossip algorithm. Using push strategy, taking first 10 neighbors in the cache to disseminate info and updating oneHopaway friends . 
+ * Then we are comparing the {@value}interest with its neighbors and assigning the greater value to the neighbor if it has smaller value.
+ * Checking flag every time to see if it has reached the specific node in which we are interested
+ * * <p>
+ * 
+ * @author  Ishan Tiwari
+ * @version 1.0
+ * @since   04.08.2016 
+ */
 public class SocialNetworkCalculations extends SingleValueHolder implements CDProtocol{
-	
+
 	/** String to get the initial value */
 	protected static final String PAR_INTEREST = "interest";
 	/** String to get the aggregate function to use */
 	protected static final String param_experiment = "exp";
-	
-	
+	/** String to get the push, pull or pushpull strategy */
+	protected static final String param_type = "type";
+
 	protected FriendCircle User;
-	
-	//protected int friendSize;
-	
+
 	protected String exp;
 	
+	protected String type;
+	
+
 	/** Interest value. Obtained from config property {@link #PAR_INTEREST}. */
 	private final int interest_value;
-	
 	protected int interest;
-	
+
+
 
 	public SocialNetworkCalculations(String prefix) {
 		super(prefix);
@@ -40,15 +54,17 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		interest_value = (Configuration.getInt(prefix + "." + PAR_INTEREST, 1));
 		//get interest value from the config value
 		exp = Configuration.getString(prefix + "." + param_experiment);
+		//get the type of dissemination
+		type = Configuration.getString(prefix + "." + param_type);
 		//UserData userdata = new UserData();
 		//User =  new FriendCircle(userdata);
 		interest = interest_value;
 		if(exp.equals("find")){//to identify different functions
 			System.out.println("Inside find");
 		}
-		
+
 	}
-	
+
 	public FriendCircle getUser() {
 		return User;
 	}
@@ -64,105 +80,87 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		SocialNetworkCalculations neighbor = null;
 		boolean found = false;
 		String resultDisplay = null;
-		List neighborList = new ArrayList();
+		this.User.userdata.offlineUsers = 0;
+		List<SocialNetworkCalculations> neighborList = new ArrayList<SocialNetworkCalculations>();
 		for (int i = 0; i < linkable.degree(); ++i) {
 			Node peer = linkable.getNeighbor(i);
 			long peerID =  peer.getID();
 			long peerIndex = peer.getIndex();
-			//System.out.println("peer ID is "+ peerID+ " peer index is "+peerIndex);
 			// The selected peer could be inactive
-			if (!peer.isUp())
-			continue;
+			if (!peer.isUp()){
+				this.User.userdata.offlineUsers ++;
+				continue;
+			}
 			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
-				neighbor = user;
-				neighborList.add(neighbor);
+			neighbor = user;
+			neighborList.add(neighbor);
 			if(neighbor ==null)
 				return;
-			//if(i<5)
-			//oneHopAwayCalculations(neighbor);
-			//resultDisplay = foundNeighbor(neighbor, peerID);
-			//resultDisplay.concat(" at Cycle ")
-			//System.err.println(resultDisplay);
 		}
-		initializeCircle(neighborList, linkable);
-		disseminateInfoPush(neighborList);
-		//System.err.print(resultDisplay);
-		//System.err.println("friend list is "+neighborList.size());
-		
-	}
-	
-	protected String foundNeighbor(SocialNetworkCalculations neighbor, long peerID){
-		//In this function we can perform other tasks like exchanging the value or updating etc.
-		//System.out.println("Inside found Neighbor");
-		//System.out.println("Size is "+ this.interest+" and peer size is "+neighbor.interest);
-		//System.out.println("-->>>Size of the hobbiees"+ this.User.userdata.hobbies);
-		//boolean found = this.User.userdata.hobbies.contains(neighbor.User.userdata.hobbies);
-		boolean found =  false;//System.out.println("usr sizze is "+this.User.size+"neighbor size is"+ neighbor.User.size);
-		boolean alreadyFound = false;
-		boolean isOneHopAway = false;
-		String result = "";
-		//System.out.println("Intereest "+this.interest+" interest 2 "+neighbor.interest);
-		if((this.interest == 555 && neighbor.interest==555)){//System.out.println("inside1"+this.User.userdata.neighbors.containsKey(peerID));
-			if(!(this.User.userdata.neighbors.containsKey(peerID))){
-				//System.out.println("inside2");
-				this.User.userdata.neighbors.put(peerID, neighbor.interest);
-				found = true;	
-			} else if (!(this.User.userdata.oneHopFriends.containsKey(peerID))){
-				isOneHopAway = true;
+		if(node.isUp()){
+			initializeCircle(neighborList, linkable);
+			oneHopAwayCalculations(neighborList);
+			if(type.equals("push")){
+				disseminateInfoPush(neighborList);
+			} else if(type.equals("pull")){
+				disseminateInfoPull(neighborList);
+			} else if(type.equals("pushpull")){
+				disseminateInfoPushPull(neighborList);
+			} else {
+				disseminateInfoPush(neighborList);
 			}
-		} 
-		
-		if(found){
-			result = "\n**Found Friend "+peerID;//System.out.println(result);
-		} 
-		if (isOneHopAway) {
-			result = "\n*&&&&&&*Found one Hop Away "+peerID;
 		}
-		return result;
 	}
+
 	//Adding neighbors to friend circle
 	protected void initializeCircle(List neighborList, Linkable linkable){
 		this.User.size = linkable.degree();
-        for(int k = 0; k <linkable.degree(); k++){
-        	SocialNetworkCalculations user = (SocialNetworkCalculations) neighborList.get(k);
-        	for(int j = 0; j< linkable.degree(); j++){
-        		long neighborID = linkable.getNeighbor(j).getID();
-        		user.getUser().userdata.neighbors.put(neighborID, user.interest);//System.out.println("Degree is "+linkable.degree()+ "ID is "+linkable.getNeighbor(j).getID());
-        	//System.out.println("neighbor id added is "+neighborID+ "user value is "+user.getValue());
-        	}
-        }
-	}
-	//Adding all the users which are one hop away or "mutual friends"
-	protected void oneHopAwayCalculations(SocialNetworkCalculations neighbor){
-		//adding neighbors friends to one hop away, ignoring the ones the user already have
-		neighbor.User.userdata.neighbors.forEach(this.User.userdata.oneHopFriends::putIfAbsent);
-		/*for(Iterator<Entry<Long, Integer>> it = this.User.userdata.oneHopFriends.entrySet().iterator(); it.hasNext(); ) {
-		      if(this.User.userdata.oneHopFriends.size() > 10){
-		       it.remove();
-		      }
-		  }*/
-		for (int j=0; j<this.User.userdata.oneHopFriends.size(); j++){
-			if(j>5){
-				this.User.userdata.oneHopFriends.remove(j);
+		for(int k = 0; k <neighborList.size(); k++){
+			SocialNetworkCalculations user = (SocialNetworkCalculations) neighborList.get(k);
+			for(int j = 0; j< linkable.degree(); j++){
+				if(linkable.getNeighbor(j).isUp()){
+					long neighborID = linkable.getNeighbor(j).getID();
+					user.getUser().userdata.neighbors.put(neighborID, 0);
+				} 
 			}
 		}
-		//System.out.println("Before "+this.User.userdata.oneHopFriends.size());
-		//this.User.userdata.neighbors.entrySet().removeAll(this.User.userdata.oneHopFriends.entrySet());
-		
-		//removing the entries which are already neighbor
-		for(Iterator<Entry<Long, Integer>> it1 = this.User.userdata.oneHopFriends.entrySet().iterator(); it1.hasNext(); ) {
-			Entry<Long, Integer> entry1 = it1.next();
-		for(Iterator<Entry<Long, Integer>> it2 = this.User.userdata.neighbors.entrySet().iterator(); it2.hasNext(); ) {
-		      Entry<Long, Integer> entry2 = it2.next();
-		      if(entry1.getKey().equals(entry2.getKey())) {
-		        it1.remove();
-		      }
-		    }
-		}
-		
-		//System.out.println("After "+this.User.userdata.oneHopFriends.size());
 	}
-	//Disseminate info to a neighbor 
+	//Adding all the users which are one hop away or "mutual friends"
+	protected void oneHopAwayCalculations(List<SocialNetworkCalculations> neighborList){
+		//adding neighbors friends to one hop away, ignoring the ones the user already have
+		for (int i = 0; i < neighborList.size(); i++){
+			SocialNetworkCalculations neighbor = neighborList.get(i);
+
+			//Important step: putting the one hop away friend if not present otherwise updating its frequency
+
+			for(Iterator<Entry<Long, Integer>> it1 = neighbor.User.userdata.neighbors.entrySet().iterator(); it1.hasNext(); ) {
+				Entry<Long, Integer> entryPeer = it1.next();
+				if(!this.User.userdata.oneHopFriends.containsKey(entryPeer.getKey())){
+					this.User.userdata.oneHopFriends.put(entryPeer.getKey(), entryPeer.getValue());
+				}
+				else {
+					this.User.userdata.oneHopFriends.replace(entryPeer.getKey(), entryPeer.getValue()+1);
+				}
+			}
+
+			//removing the entries which are already neighbor
+			this.User.userdata.neighbors.forEach(this.User.userdata.oneHopFriends:: remove);
+
+			//sorting them according their frequency
+			sortByValue(this.User.userdata.oneHopFriends);
+
+			//trimming the one hop away list top 5 neighbors
+			int count = 0;
+			for(Iterator<Entry<Long, Integer>> itOneHop = this.User.userdata.oneHopFriends.entrySet().iterator(); itOneHop.hasNext(); ) {
+				Entry<Long, Integer> entryPeer = itOneHop.next();
+				count ++;
+				if(count > 5)
+					itOneHop.remove();
+			}	
+		}
+	}
+
+	//Disseminate info to a neighbor using push strategy
 	protected void disseminateInfoPush(List neighborList){
 		//Take the list 
 		//System.out.println("Inside");
@@ -173,16 +171,87 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			//update the value of interest of neighbor if less
 			if(friend.interest < this.interest){
 				friend.interest = this.interest;
+				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
 			}
 			if(friend.User.flag == -1 && friend.interest == 555 ){
 				friend.User.flag = -2;
 			}
+			if(this.User.flag == -1 && this.interest == 555 ){
+				this.User.flag = -2;
+			}
 		}
-		
 	}
-	
+
+	//Disseminate info to a neighbor using pull strategy
+	protected void disseminateInfoPull(List neighborList){
+		//Take the list 
+		//System.out.println("Inside");
+		//Taking top half neighbors
+		Collections.shuffle(neighborList);
+		for (int i = 0; i < neighborList.size()/4; i++) {
+			SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
+			//update the value of interest of neighbor if less
+			if(friend.interest > this.interest){
+				this.interest = friend.interest;
+				this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
+			}
+			if(friend.User.flag == -1 && friend.interest == 555 ){
+				friend.User.flag = -2;
+			}
+			if(this.User.flag == -1 && this.interest == 555 ){
+				this.User.flag = -2;
+			}
+		}
+	}
+	//Disseminate info to a neighbor using pushpull strategy
+	protected void disseminateInfoPushPull(List neighborList){
+		//Take the list 
+		//System.out.println("Inside");
+		//Taking top half neighbors
+		Collections.shuffle(neighborList);
+		for (int i = 0; i < neighborList.size()/4; i++) {
+			SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
+			//update the value of interest of neighbor if less
+			if(friend.interest > this.interest){
+				this.interest = friend.interest;
+				this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
+			} else if(friend.interest < this.interest){
+				friend.interest = this.interest;
+				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
+			}
+			if(friend.User.flag == -1 && friend.interest == 555 ){
+				friend.User.flag = -2;
+			}
+			if(this.User.flag == -1 && this.interest == 555 ){
+				this.User.flag = -2;
+			}
+		}
+	}
 	//match the friend
 	protected void setInterestVal(double interest){
 		this.interest = interest_value;	
+	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Map sortByValue(Map unsortedMap) {
+		Map sortedMap = new TreeMap(new ValueComparator(unsortedMap));
+		sortedMap.putAll(unsortedMap);
+		return sortedMap;
+	}
+}
+
+
+@SuppressWarnings("rawtypes")
+class ValueComparator implements Comparator {
+	Map map;
+
+	public ValueComparator(Map map) {
+		this.map = map;
+	}
+
+	@SuppressWarnings("unchecked")
+	public int compare(Object keyA, Object keyB) {
+		Comparable valueA = (Comparable) map.get(keyA);
+		Comparable valueB = (Comparable) map.get(keyB);
+		return valueB.compareTo(valueA);
 	}
 }

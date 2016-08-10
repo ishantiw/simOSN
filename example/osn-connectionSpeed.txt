@@ -1,8 +1,8 @@
-# PEERSIM EXAMPLE 2
+# OSN Experiment1 : Finding Friend
 
 #random.seed 1234567890
 
-simulation.cycles 100
+simulation.cycles 20
 
 control.shf Shuffle
 
@@ -12,14 +12,16 @@ network.size 5000
 #protocol.lnk.cache 20
 protocol.lnk IdleProtocol
 
+#Instantiates and update friend circle for nodes and compares the values with its neighbors, sets the greater value to neighbor 
 protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
 protocol.osn.exp find
 protocol.osn.interest 8
+protocol.osn.type pull
 
 init.rnd WireKOut
 init.rnd.protocol lnk
-init.rnd.k 10
+init.rnd.k 5
 init.rnd.undir true
 
 init.pk example.aggregation.PeakDistributionInitializer
@@ -31,20 +33,28 @@ init.ld.protocol osn
 init.ld.max 100
 init.ld.min 1
 
+###Using OSN Initializer
 init.oinit it.osn.core.OSNInitializer
 init.oinit.protocol osn
 init.oinit.max 10
 init.oinit.min 2
 
-# you can change this to include the linear initializer instead
+###Using OSN Parameters Initializer
+init.oinit it.osn.core.OSNParametersInitializer
+init.oinit.protocol osn
+init.oinit.max 10
+init.oinit.min 2
+
+# you can change this to include the linear or peak initializer instead of OSNInitializer
 include.init rnd oinit
 
+###Profile dissemination 
 control.ao it.osn.core.UserProfileDissemination
 control.ao.protocol osn
 
-#control.dnet DynamicNetwork
-#control.dnet.add -500
+control.dnet DynamicNetwork
+control.dnet.add -50
 #control.dnet.minsize 45000
-#control.dnet.from 5
-#control.dnet.until 15
+control.dnet.from 2
+control.dnet.until 8
  
