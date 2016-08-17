@@ -35,7 +35,7 @@ public class OSNParametersInitializer implements Control{
 	//private final FriendCircle friendCircle;
 	//private final UserData userdata;
 	
-	private static String[] hobbies = { "Basketball", "Tennis", "Movies", "Gaming", "Cricket", "Chess" };
+	private static String[] hobbies = { "Basketball", "Tennis", "Movies", "Gaming", "Cricket", "Chess", "Soccer"};
 
 	public OSNParametersInitializer(String prefix) {
 		super();
@@ -56,30 +56,29 @@ public class OSNParametersInitializer implements Control{
 		boolean flag = false;
 		for (int i = 0; i < Network.size(); i++) {
 			SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
-			//Linkable linkable = (Linkable)Network.get(i).getProtocol(pid);
+			int peak_interest = prot.interest;
+			//Initializing User Data class
 			UserData data = new UserData();
-			int val = (int) (Math.random() * (max - min));
-			val += min;//System.out.println("Valus are "+val);
 			
-			String hobbie = hobbies[(int) (Math.random() * hobbies.length)];
-			data.hobbies.add(hobbie);
-			/*if(val%2==0){
-				data.hobbies.add("BasketBall");
-				//data.hobbies.add("Soccer");
-			}
-			if(val%3==0){
-				data.hobbies.add("Soccer");
-				data.hobbies.add("Tennis");
-				data.hobbies.add("BasketBall");
-			} else {
-				data.hobbies.add("BasketBall");
-			}*/
+			//Calculating random values which will be assigned to all the nodes. note: "interest" value
+			int val = (int) (Math.random() * (max - min));
+			val += min;
+			
+			//Assigning 3 hobbies randomly to all the nodes
+			String hobbie1 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie2 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie3 = hobbies[(int) (Math.random() * hobbies.length)];
+			data.hobbies.add(hobbie1);
+			data.hobbies.add(hobbie2);
+			data.hobbies.add(hobbie3);
 			
 			FriendCircle circle = new FriendCircle(data);
 			prot.interest = val;
 			prot.setUser(circle);
+			
+			//Assigning a node with a peak value and another node with a flag different than others to identify them specifically
 			if(i == 2){
-				prot.interest = 555;
+				prot.interest = peak_interest;
 				prot.User.flag = 1;
 				prot.User.userdata.connectionSpeed = val * 10 * (Math.random() * (max - min));
 			} else if(i == 3800){

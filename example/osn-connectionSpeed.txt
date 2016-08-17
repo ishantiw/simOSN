@@ -6,7 +6,7 @@ simulation.cycles 20
 
 control.shf Shuffle
 
-network.size 5000
+network.size 10000
  
 #protocol.lnk example.newscast.SimpleNewscast
 #protocol.lnk.cache 20
@@ -16,7 +16,7 @@ protocol.lnk IdleProtocol
 protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
 protocol.osn.exp find
-protocol.osn.interest 8
+protocol.osn.peak_interest 888
 protocol.osn.type pull
 
 init.rnd WireKOut

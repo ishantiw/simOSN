@@ -30,7 +30,7 @@ import peersim.vector.SingleValueHolder;
 public class SocialNetworkCalculations extends SingleValueHolder implements CDProtocol{
 
 	/** String to get the initial value */
-	protected static final String PAR_INTEREST = "interest";
+	protected static final String PAR_INTEREST = "peak_interest";
 	/** String to get the aggregate function to use */
 	protected static final String param_experiment = "exp";
 	/** String to get the push, pull or pushpull strategy */
@@ -197,10 +197,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				friend.interest = this.interest;
 				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == 555 ){
+			if(friend.User.flag == -1 && friend.interest == this.interest_value ){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == 555 ){
+			if(this.User.flag == -1 && this.interest == this.interest_value ){
 				this.User.flag = -2;
 			}
 		}
@@ -219,10 +219,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				this.interest = friend.interest;
 				this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == 555 ){
+			if(friend.User.flag == -1 && friend.interest == this.interest_value){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == 555 ){
+			if(this.User.flag == -1 && this.interest == this.interest_value ){
 				this.User.flag = -2;
 			}
 		}
@@ -243,18 +243,15 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				friend.interest = this.interest;
 				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == 555 ){
+			if(friend.User.flag == -1 && friend.interest == this.interest_value ){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == 555 ){
+			if(this.User.flag == -1 && this.interest == this.interest_value ){
 				this.User.flag = -2;
 			}
 		}
 	}
-	//match the friend
-	protected void setInterestVal(double interest){
-		this.interest = interest_value;	
-	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Map sortByValue(Map unsortedMap) {
 		Map sortedMap = new TreeMap(new ValueComparator(unsortedMap));
