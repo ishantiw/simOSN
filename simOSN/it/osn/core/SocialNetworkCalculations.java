@@ -13,6 +13,7 @@ import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
 import peersim.config.FastConfig;
 import peersim.core.Linkable;
+import peersim.core.Network;
 import peersim.core.Node;
 import peersim.vector.SingleValueHolder;
 /**
@@ -38,9 +39,9 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	protected FriendCircle User;
 
 	protected String exp;
-	
+
 	protected String type;
-	
+
 
 	/** Interest value. Obtained from config property {@link #PAR_INTEREST}. */
 	private final int interest_value;
@@ -78,6 +79,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		int linkableID = FastConfig.getLinkable(protocolID);
 		Linkable linkable = (Linkable) node.getProtocol(linkableID);
 		SocialNetworkCalculations neighbor = null;
+
 		boolean found = false;
 		String resultDisplay = null;
 		this.User.userdata.offlineUsers = 0;
@@ -91,6 +93,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				this.User.userdata.offlineUsers ++;
 				continue;
 			}
+			
 			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
 			neighbor = user;
 			neighborList.add(neighbor);
@@ -100,6 +103,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		if(node.isUp()){
 			initializeCircle(neighborList, linkable);
 			oneHopAwayCalculations(neighborList);
+			addingNewFriends(linkable, protocolID);
 			if(type.equals("push")){
 				disseminateInfoPush(neighborList);
 			} else if(type.equals("pull")){
@@ -120,7 +124,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			for(int j = 0; j< linkable.degree(); j++){
 				if(linkable.getNeighbor(j).isUp()){
 					long neighborID = linkable.getNeighbor(j).getID();
-					user.getUser().userdata.neighbors.put(neighborID, 0);
+					user.getUser().userdata.neighbors.put((int) neighborID, 0);
 				} 
 			}
 		}
@@ -133,33 +137,53 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 
 			//Important step: putting the one hop away friend if not present otherwise updating its frequency
 
-			for(Iterator<Entry<Long, Integer>> it1 = neighbor.User.userdata.neighbors.entrySet().iterator(); it1.hasNext(); ) {
-				Entry<Long, Integer> entryPeer = it1.next();
+			for(Iterator<Entry<Integer, Integer>> it1 = neighbor.User.userdata.neighbors.entrySet().iterator(); it1.hasNext(); ) {
+				Entry<Integer, Integer> entryPeer = it1.next();
 				if(!this.User.userdata.oneHopFriends.containsKey(entryPeer.getKey())){
+					//System.out.println("hereeee"+entryPeer.getValue());
 					this.User.userdata.oneHopFriends.put(entryPeer.getKey(), entryPeer.getValue());
 				}
 				else {
-					this.User.userdata.oneHopFriends.replace(entryPeer.getKey(), entryPeer.getValue()+1);
+					//System.out.println("in Her"+entryPeer.getValue()+1);
+					this.User.userdata.oneHopFriends.replace(entryPeer.getKey(), (entryPeer.getValue()+1));
 				}
 			}
 
 			//removing the entries which are already neighbor
-			this.User.userdata.neighbors.forEach(this.User.userdata.oneHopFriends:: remove);
-
-			//sorting them according their frequency
-			sortByValue(this.User.userdata.oneHopFriends);
-
-			//trimming the one hop away list top 5 neighbors
-			int count = 0;
-			for(Iterator<Entry<Long, Integer>> itOneHop = this.User.userdata.oneHopFriends.entrySet().iterator(); itOneHop.hasNext(); ) {
-				Entry<Long, Integer> entryPeer = itOneHop.next();
-				count ++;
-				if(count > 5)
-					itOneHop.remove();
-			}	
+			this.User.userdata.neighbors.forEach(this.User.userdata.oneHopFriends:: remove);				
+		}
+		//sorting them according their frequency
+		sortByValue(this.User.userdata.oneHopFriends);
+		//trimming the one hop away list top 5 neighbors
+		int count = 0;
+		for(Iterator<Entry<Integer, Integer>> itOneHop = this.User.userdata.oneHopFriends.entrySet().iterator(); itOneHop.hasNext(); ) {
+			Entry<Integer, Integer> entryPeer = itOneHop.next();
+			count ++;
+			if(count > 5)
+				itOneHop.remove();
 		}
 	}
+	//adding new friends based on frequency factor
+	protected void addingNewFriends(Linkable linkable, int protocolID){
+		for(Iterator<Entry<Integer, Integer>> it = this.User.userdata.oneHopFriends.entrySet().iterator(); it.hasNext(); ) {
+			Entry<Integer, Integer> entryfind = it.next();
+			Node node = Network.get(entryfind.getKey());
+			if(node != null && node.isUp()){
+				SocialNetworkCalculations tempNode = (SocialNetworkCalculations) node.getProtocol(protocolID);
 
+				List tempList = tempNode.User.userdata.hobbies;
+				tempList.retainAll(this.User.userdata.hobbies);
+				//System.out.println("Size is "+entryfind.getValue());
+				if(entryfind.getValue() > 0 && tempList.size() > 2){
+					//System.out.println("In here");
+					linkable.addNeighbor(Network.get((Integer)entryfind.getKey()));
+					this.User.userdata.neighbors.put(entryfind.getKey(), entryfind.getValue());
+					it.remove();
+					this.User.userdata.newFriends ++;
+				} 
+			}
+		}
+	}
 	//Disseminate info to a neighbor using push strategy
 	protected void disseminateInfoPush(List neighborList){
 		//Take the list 

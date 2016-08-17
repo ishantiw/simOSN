@@ -58,10 +58,18 @@ public class OSNParametersInitializer implements Control{
 			UserData data = new UserData();
 			int val = (int) (Math.random() * (max - min));
 			val += min;//System.out.println("Valus are "+val);
-			if(val%2==0)
+			if(val%2==0){
 				data.hobbies.add("BasketBall");
-			if(val%3==0)
+				//data.hobbies.add("Soccer");
+			}
+			if(val%3==0){
 				data.hobbies.add("Soccer");
+				data.hobbies.add("Tennis");
+				data.hobbies.add("BasketBall");
+			} else {
+				data.hobbies.add("BasketBall");
+			}
+			
 			FriendCircle circle = new FriendCircle(data);
 			prot.interest = val;
 			prot.setUser(circle);

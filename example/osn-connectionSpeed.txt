@@ -21,7 +21,7 @@ protocol.osn.type pull
 
 init.rnd WireKOut
 init.rnd.protocol lnk
-init.rnd.k 5
+init.rnd.k 10
 init.rnd.undir true
 
 init.pk example.aggregation.PeakDistributionInitializer
