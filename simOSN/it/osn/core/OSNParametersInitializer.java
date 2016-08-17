@@ -34,6 +34,8 @@ public class OSNParametersInitializer implements Control{
 	private final int min;
 	//private final FriendCircle friendCircle;
 	//private final UserData userdata;
+	
+	private static String[] hobbies = { "Basketball", "Tennis", "Movies", "Gaming", "Cricket", "Chess" };
 
 	public OSNParametersInitializer(String prefix) {
 		super();
@@ -58,7 +60,10 @@ public class OSNParametersInitializer implements Control{
 			UserData data = new UserData();
 			int val = (int) (Math.random() * (max - min));
 			val += min;//System.out.println("Valus are "+val);
-			if(val%2==0){
+			
+			String hobbie = hobbies[(int) (Math.random() * hobbies.length)];
+			data.hobbies.add(hobbie);
+			/*if(val%2==0){
 				data.hobbies.add("BasketBall");
 				//data.hobbies.add("Soccer");
 			}
@@ -68,7 +73,7 @@ public class OSNParametersInitializer implements Control{
 				data.hobbies.add("BasketBall");
 			} else {
 				data.hobbies.add("BasketBall");
-			}
+			}*/
 			
 			FriendCircle circle = new FriendCircle(data);
 			prot.interest = val;
