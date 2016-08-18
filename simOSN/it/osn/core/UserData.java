@@ -1,12 +1,28 @@
 package it.osn.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class UserData {
-	protected Map<Integer, Integer> neighbors;
-	protected List<String> hobbies;
-	
+	double connectionSpeed;
+	int hopCount;
+	int offlineUsers;
+	int newFriends;
+	int newRandomFriends;
+	protected Map<Integer, Integer> neighbors = new HashMap<>();
+	protected List hobbies = new ArrayList();
+	protected Map<Integer, Integer> oneHopFriends= new HashMap<>();
+	public Map<Integer, Integer> getOneHopFriends() {
+		return oneHopFriends;
+	}
+	public void setOneHopFriends(Map<Integer, Integer> oneHopFriends) {
+		this.oneHopFriends = oneHopFriends;
+	}
 	@Override
 	public String toString() {
 		return "UserData [neighbors=" + neighbors + ", hobbies=" + hobbies + "]";
