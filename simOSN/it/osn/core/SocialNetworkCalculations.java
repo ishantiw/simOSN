@@ -35,18 +35,18 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	protected static final String param_experiment = "exp";
 	/** String to get the push, pull or pushpull strategy */
 	protected static final String param_type = "type";
-
+	protected static final String PAR_ONEHOPSIZE = "oneHopSize";
 	protected FriendCircle User;
 
 	protected String exp;
 
 	protected String type;
-
+	
+	protected final int oneHopSize;
 
 	/** Interest value. Obtained from config property {@link #PAR_INTEREST}. */
-	private final int interest_value;
+	protected final int interest_value;
 	protected int interest;
-
 
 
 	public SocialNetworkCalculations(String prefix) {
@@ -57,6 +57,8 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		exp = Configuration.getString(prefix + "." + param_experiment);
 		//get the type of dissemination
 		type = Configuration.getString(prefix + "." + param_type);
+		
+		oneHopSize = Configuration.getInt(prefix + "." + PAR_ONEHOPSIZE);
 		//UserData userdata = new UserData();
 		//User =  new FriendCircle(userdata);
 		interest = interest_value;
@@ -66,13 +68,16 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 
 	}
 
+
 	public FriendCircle getUser() {
 		return User;
 	}
 
+
 	public void setUser(FriendCircle user) {
 		User = user;
 	}
+
 
 	@Override
 	public void nextCycle(Node node, int protocolID) {
@@ -113,6 +118,8 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			} else {
 				disseminateInfoPush(neighborList);
 			}
+			
+			findRandomFriends(linkable, protocolID);
 		}
 	}
 
@@ -124,7 +131,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			for(int j = 0; j< linkable.degree(); j++){
 				if(linkable.getNeighbor(j).isUp()){
 					long neighborID = linkable.getNeighbor(j).getID();
-					user.getUser().userdata.neighbors.put((int) neighborID, 0);
+					user.User.userdata.neighbors.put((int) neighborID, 0);
 				} 
 			}
 		}
@@ -159,7 +166,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		for(Iterator<Entry<Integer, Integer>> itOneHop = this.User.userdata.oneHopFriends.entrySet().iterator(); itOneHop.hasNext(); ) {
 			Entry<Integer, Integer> entryPeer = itOneHop.next();
 			count ++;
-			if(count > 5)
+			if(count > oneHopSize)
 				itOneHop.remove();
 		}
 	}
@@ -174,7 +181,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				List tempList = tempNode.User.userdata.hobbies;
 				tempList.retainAll(this.User.userdata.hobbies);
 				//System.out.println("Size is "+entryfind.getValue());
-				if(entryfind.getValue() > 0 && tempList.size() > 2){
+				if(entryfind.getValue() > 0 && tempList.size() > 1){
 					//System.out.println("In here");
 					linkable.addNeighbor(Network.get((Integer)entryfind.getKey()));
 					this.User.userdata.neighbors.put(entryfind.getKey(), entryfind.getValue());
@@ -197,10 +204,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				friend.interest = this.interest;
 				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == this.interest_value ){
+			if(friend.User.flag == -1 && friend.interest == interest_value ){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == this.interest_value ){
+			if(this.User.flag == -1 && this.interest == interest_value ){
 				this.User.flag = -2;
 			}
 		}
@@ -219,10 +226,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				this.interest = friend.interest;
 				this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == this.interest_value){
+			if(friend.User.flag == -1 && friend.interest == interest_value){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == this.interest_value ){
+			if(this.User.flag == -1 && this.interest == interest_value ){
 				this.User.flag = -2;
 			}
 		}
@@ -243,15 +250,69 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				friend.interest = this.interest;
 				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
 			}
-			if(friend.User.flag == -1 && friend.interest == this.interest_value ){
+			if(friend.User.flag == -1 && friend.interest == interest_value ){
 				friend.User.flag = -2;
 			}
-			if(this.User.flag == -1 && this.interest == this.interest_value ){
+			if(this.User.flag == -1 && this.interest == interest_value ){
 				this.User.flag = -2;
 			}
 		}
 	}
 
+	protected void findRandomFriends(Linkable linkable, int protocolID){
+		int randomID = (int) (Math.random() * Network.size());
+		Node randomFriend = Network.get(randomID);
+		if(randomFriend != null && randomFriend.isUp()){
+			SocialNetworkCalculations tempNode = (SocialNetworkCalculations) randomFriend.getProtocol(protocolID);
+			if(!this.User.userdata.neighbors.containsKey(randomID) && !this.User.userdata.oneHopFriends.containsKey(randomID)){
+				List tempList = tempNode.User.userdata.hobbies;
+				tempList.retainAll(this.User.userdata.hobbies);
+				if(tempList.size()>3){
+					linkable.addNeighbor(Network.get(randomID));
+					this.User.userdata.neighbors.put(randomID, 0);
+					this.User.userdata.newRandomFriends ++;
+				}
+			}
+		}
+	}
+	//Disseminating information based on the connection speed in the friend circle
+	protected void disseminateBasedOnSpeed(List neighborList){
+		//Take the list 
+				//System.out.println("Inside");
+				//Taking top half neighbors
+				Collections.shuffle(neighborList);
+				double averageSpeed = averageConnectionSpeed(neighborList);
+				for (int i = 0; i < neighborList.size()/4; i++) {
+					SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
+					//if(friend.User.userdata.connectionSpeed > )
+					//update the value of interest of neighbor if less
+					if(friend.interest > this.interest && (this.User.userdata.connectionSpeed > (averageSpeed/2))){
+						this.interest = friend.interest;
+						this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
+					} else if(friend.interest < this.interest && (friend.User.userdata.connectionSpeed > (averageSpeed/2))){
+						friend.interest = this.interest;
+						friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
+					}
+					if(friend.User.flag == -1 && friend.interest == interest_value ){
+						friend.User.flag = -2;
+					}
+					if(this.User.flag == -1 && this.interest == interest_value ){
+						this.User.flag = -2;
+					}
+				}
+		
+	}
+	//calculating the average connection speed in the friend circle
+	protected double averageConnectionSpeed(List neighborList){
+		double averageSpeed = 0;
+		int size = neighborList.size();
+		for (int i = 0; i < size; i++) {
+			SocialNetworkCalculations tempNode = (SocialNetworkCalculations) neighborList.get(i);
+			averageSpeed += tempNode.User.userdata.connectionSpeed;
+		}
+		averageSpeed = averageSpeed/size;
+		return averageSpeed;
+	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Map sortByValue(Map unsortedMap) {
 		Map sortedMap = new TreeMap(new ValueComparator(unsortedMap));

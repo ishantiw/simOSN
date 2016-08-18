@@ -77,6 +77,7 @@ public class UserProfileDissemination implements Control{
 		ArrayList<Double> avgConnectionSpeed = new ArrayList<Double>();
 		int totalOfflineNodes = 0;
 		int totalNewfriends = 0;
+		int totalNewRandomFriends = 0;
 		boolean foundFriend  = false;
 		int hopsToReach = 0;
 		for (int i = 0; i < Network.size(); i++) {
@@ -88,6 +89,7 @@ public class UserProfileDissemination implements Control{
 			avgConnectionSpeed.add(protocol.User.userdata.connectionSpeed);
 			totalOfflineNodes += protocol.User.userdata.offlineUsers; 
 			totalNewfriends += protocol.User.userdata.newFriends;
+			totalNewRandomFriends += protocol.User.userdata.newRandomFriends;
 			//freqHop.add(protocol.User.userdata.oneHopFriends.);
 			if(protocol.User.flag == -2){
 				foundFriend = true;
@@ -102,7 +104,8 @@ public class UserProfileDissemination implements Control{
 		System.out.println(name + ": " + stats);
 		System.out.println("Average circle size: "+ avgFriendCircle + " Average one Hop Away Size: " + avgOneHopAway);
 		System.out.println("Average Connection Speed in the system is " + avgConnSpeed+ " and Total number of failed Links"+totalOfflineNodes);
-		System.out.println("Total new friends "+totalNewfriends);
+		System.out.println("Total new friends " + totalNewfriends);
+		System.out.println("Total new random friends " + totalNewRandomFriends);
 		/* Printing a message when everyone received the message */
 		if(stats.getMax() == stats.getMin())
 			System.err.println("Everyone Received the message at "+now);

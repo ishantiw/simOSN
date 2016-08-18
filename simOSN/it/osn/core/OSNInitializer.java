@@ -63,7 +63,7 @@ public class OSNInitializer implements Control{
 				data.hobbies.add("Soccer");
 			FriendCircle circle = new FriendCircle(data);
 			prot.interest = val;
-			prot.setUser(circle);
+			prot.User = circle;
 			if(i == 2){
 				prot.interest = 555;
 				prot.User.flag = 1;

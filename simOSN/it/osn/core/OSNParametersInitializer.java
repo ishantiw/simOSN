@@ -35,7 +35,7 @@ public class OSNParametersInitializer implements Control{
 	//private final FriendCircle friendCircle;
 	//private final UserData userdata;
 	
-	private static String[] hobbies = { "Basketball", "Tennis", "Movies", "Gaming", "Cricket", "Chess", "Soccer"};
+	private static String[] hobbies = { "Basketball", "Tennis", "Movies", "Gaming", "Cricket", "Chess", "Soccer", "Golf", "Travelling", "Polo", "Music", "Football"};
 
 	public OSNParametersInitializer(String prefix) {
 		super();
@@ -56,7 +56,7 @@ public class OSNParametersInitializer implements Control{
 		boolean flag = false;
 		for (int i = 0; i < Network.size(); i++) {
 			SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
-			int peak_interest = prot.interest;
+			int peak_interest = prot.interest_value;
 			//Initializing User Data class
 			UserData data = new UserData();
 			
@@ -68,12 +68,15 @@ public class OSNParametersInitializer implements Control{
 			String hobbie1 = hobbies[(int) (Math.random() * hobbies.length)];
 			String hobbie2 = hobbies[(int) (Math.random() * hobbies.length)];
 			String hobbie3 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie4 = hobbies[(int) (Math.random() * hobbies.length)];
+			//System.out.println("Hobiies"+hobbie1+" - "+hobbie2+" - "+hobbie3);
 			data.hobbies.add(hobbie1);
 			data.hobbies.add(hobbie2);
 			data.hobbies.add(hobbie3);
+			data.hobbies.add(hobbie4);
 			
 			FriendCircle circle = new FriendCircle(data);
-			prot.interest = val;
+			//prot.interest = val;
 			prot.setUser(circle);
 			
 			//Assigning a node with a peak value and another node with a flag different than others to identify them specifically

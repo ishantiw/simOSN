@@ -13,6 +13,7 @@ public class UserData {
 	int hopCount;
 	int offlineUsers;
 	int newFriends;
+	int newRandomFriends;
 	protected Map<Integer, Integer> neighbors = new HashMap<>();
 	protected List hobbies = new ArrayList();
 	protected Map<Integer, Integer> oneHopFriends= new HashMap<>();
