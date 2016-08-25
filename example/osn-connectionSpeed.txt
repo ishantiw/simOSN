@@ -2,7 +2,7 @@
 
 #random.seed 1234567890
 
-simulation.cycles 20
+simulation.cycles 100
 
 control.shf Shuffle
 
@@ -15,8 +15,8 @@ protocol.lnk IdleProtocol
 #Instantiates and update friend circle for nodes and compares the values with its neighbors, sets the greater value to neighbor 
 protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
-protocol.osn.exp find
-protocol.osn.peak_interest 888
+protocol.osn.exp random
+protocol.osn.peak_interest 999
 protocol.osn.oneHopSize 5
 protocol.osn.type pull
 
