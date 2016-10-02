@@ -1,9 +1,14 @@
 package it.osn.core;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
+import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
 import peersim.core.Control;
 import peersim.core.Network;
@@ -69,20 +74,26 @@ public class UserProfileDissemination implements Control{
 		return averageconnectionSpeed/Network.size();
 	}
 
-
 	public boolean execute() {
 		IncrementalStats stats = new IncrementalStats();
 		ArrayList<Integer> circleSize = new ArrayList<Integer>();
 		ArrayList<Integer> oneHopSize = new ArrayList<Integer>();
 		ArrayList<Double> avgConnectionSpeed = new ArrayList<Double>();
+		HashMap<Integer, HashMap> nodeList = new HashMap<>();
+		int displayStatus = 0;
 		int totalOfflineNodes = 0;
 		int totalNewfriends = 0;
 		int totalNewRandomFriends = 0;
+		int totalDuplicateMessage = 0;
+		int totalMessages = 0;
+		int totalRemovedOfflineContacts = 0;
 		boolean foundFriend  = false;
 		int hopsToReach = 0;
 		for (int i = 0; i < Network.size(); i++) {
+			
 			SocialNetworkCalculations protocol = (SocialNetworkCalculations) Network.get(i).getProtocol(
 					pid);
+			
 			stats.add(protocol.interest);
 			circleSize.add(protocol.User.size);
 			oneHopSize.add(protocol.User.userdata.oneHopFriends.size());
@@ -90,27 +101,46 @@ public class UserProfileDissemination implements Control{
 			totalOfflineNodes += protocol.User.userdata.offlineUsers; 
 			totalNewfriends += protocol.User.userdata.newFriends;
 			totalNewRandomFriends += protocol.User.userdata.newRandomFriends;
+			totalDuplicateMessage += protocol.User.userdata.duplicatesMessage;
+			totalMessages += protocol.User.userdata.totalMessages;
+			totalRemovedOfflineContacts += protocol.User.userdata.removedOfflineContacts;
 			//freqHop.add(protocol.User.userdata.oneHopFriends.);
 			if(protocol.User.flag == -2){
 				foundFriend = true;
 				hopsToReach = protocol.User.userdata.hopCount;
 			}
+			//System.out.println("Size of neighbor"+protocol.User.userdata.neighbors.size());
+			nodeList.put(i, (HashMap) protocol.User.userdata.neighbors);
 		}
+		
+		
 		Date now = new Date(System.currentTimeMillis());
 		double avgFriendCircle = averageFriendCircle(circleSize);
 		double avgOneHopAway = averageOneHopAway(oneHopSize);
 		double avgConnSpeed = averageConnectionSpeed(avgConnectionSpeed);
+		double averageDuplicate = totalDuplicateMessage / Network.size();
 		/* Printing statistics */
 		System.out.println(name + ": " + stats);
 		System.out.println("Average circle size: "+ avgFriendCircle + " Average one Hop Away Size: " + avgOneHopAway);
-		System.out.println("Average Connection Speed in the system is " + avgConnSpeed+ " and Total number of failed Links"+totalOfflineNodes);
+		System.out.println("Average Connection Speed in the system is " + avgConnSpeed+ " and Total number of failed Links "+totalOfflineNodes);
 		System.out.println("Total new friends " + totalNewfriends);
 		System.out.println("Total new random friends " + totalNewRandomFriends);
+		System.out.println("Average duplicate messages on nodes is: " + averageDuplicate + ": Average Number of messages on a node: "+totalMessages/Network.size());
+		System.out.println("Total Offline contacts removed: "+totalRemovedOfflineContacts);
 		/* Printing a message when everyone received the message */
-		if(stats.getMax() == stats.getMin())
+		Example example = new Example();
+		//if(displayStatus ==0)
+		example.displayGraph(nodeList);
+		if(stats.getMax() == stats.getMin()) {
 			System.err.println("Everyone Received the message at "+now);
+			
+			
+			//displayStatus =1;
+		}
 		if(foundFriend)
 			System.err.println("friend found status: "+foundFriend + " at->>> "+now + " After "+ hopsToReach +" Peers");
+		
 		return false;
 	}
+	
 }

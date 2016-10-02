@@ -2,11 +2,11 @@
 
 #random.seed 1234567890
 
-simulation.cycles 100
+simulation.cycles 2
 
 control.shf Shuffle
 
-network.size 5000
+network.size 50
  
 #protocol.lnk example.newscast.SimpleNewscast
 #protocol.lnk.cache 20
@@ -18,12 +18,19 @@ protocol.osn.linkable lnk
 protocol.osn.exp random
 protocol.osn.peak_interest 999
 protocol.osn.oneHopSize 5
-protocol.osn.type pull
+protocol.osn.type push
 
-init.rnd WireKOut
+####Watts-Strogatz model The Watts–Strogatz model is a random graph generation model that produces graphs with small-world properties,###
+#### including short average path lengths and high clustering.###
+init.rnd WireFromFile
 init.rnd.protocol lnk
-init.rnd.k 10
-init.rnd.undir true
+init.rnd.file C:\Users\IshanHP\Desktop\facebook\0edges.txt
+#The probability of re-wiring each
+#init.rnd.beta 0.5
+#init.rnd.k 2
+#init.rnd.undir true
+
+
 
 init.pk example.aggregation.PeakDistributionInitializer
 init.pk.value 10000
@@ -41,13 +48,13 @@ init.oinit.max 10
 init.oinit.min 2
 
 ###Using OSN Parameters Initializer
-init.oinit it.osn.core.OSNParametersInitializer
-init.oinit.protocol osn
-init.oinit.max 10
-init.oinit.min 2
+init.pinit it.osn.core.OSNParametersInitializer
+init.pinit.protocol osn
+init.pinit.max 10
+init.pinit.min 2
 
 # you can change this to include the linear or peak initializer instead of OSNInitializer
-include.init rnd oinit
+include.init rnd pinit
 
 ###Profile dissemination 
 control.ao it.osn.core.UserProfileDissemination
@@ -55,7 +62,7 @@ control.ao.protocol osn
 
 #control.dnet DynamicNetwork
 #control.dnet.add -50
-#control.dnet.minsize 45000
+#control.dnet.minsize 1400
 #control.dnet.from 2
 #control.dnet.until 8
  

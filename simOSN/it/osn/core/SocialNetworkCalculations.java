@@ -47,8 +47,9 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	/** Interest value. Obtained from config property {@link #PAR_INTEREST}. */
 	protected final int interest_value;
 	protected int interest;
-
-
+	
+	private static String[] locations = { "berlin", "frankfurt", "paris", "grenoble", "oslo", "london", "barcelona", "madrid", "rome", "pisa", "florence", "naples"};
+//decide on locations
 	public SocialNetworkCalculations(String prefix) {
 		super(prefix);
 		//get interest value from the config value
@@ -81,35 +82,59 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 
 	@Override
 	public void nextCycle(Node node, int protocolID) {
+		//System.out.println("Node is null "+node.isUp());
 		int linkableID = FastConfig.getLinkable(protocolID);
 		Linkable linkable = (Linkable) node.getProtocol(linkableID);
 		SocialNetworkCalculations neighbor = null;
-
+		//this.User.id = (int) node.getID();
 		boolean found = false;
 		String resultDisplay = null;
 		this.User.userdata.offlineUsers = 0;
 		List<SocialNetworkCalculations> neighborList = new ArrayList<SocialNetworkCalculations>();
+		//System.out.println("Degree "+linkable.degree());
 		for (int i = 0; i < linkable.degree(); ++i) {
 			Node peer = linkable.getNeighbor(i);
-			long peerID =  peer.getID();
-			long peerIndex = peer.getIndex();
-			// The selected peer could be inactive
+			this.User.size = linkable.degree();
+			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
+			// The selected peer could be inactive and then removing these inactive neighbors
 			if (!peer.isUp()){
 				this.User.userdata.offlineUsers ++;
+				int ID = (int) peer.getID();
+				
+				if(this.User.userdata.offlineContacts.containsKey(ID)){
+					for(Iterator<Entry<Integer, Integer>> iterator = this.User.userdata.offlineContacts.entrySet().iterator(); iterator.hasNext(); ) {
+						Entry<Integer, Integer> entryPeer = iterator.next();
+						if(entryPeer.getKey() == (int)peer.getID()) {
+							entryPeer.setValue(entryPeer.getValue()+1);
+						}
+						if(entryPeer.getValue()>4) {
+							iterator.remove();
+							//linkable.getNeighbor(i).setFailState(1);
+							if(!this.User.userdata.removedContactIDs.contains((int)linkable.getNeighbor(i).getID())) {
+								this.User.userdata.removedContactIDs.add((int)linkable.getNeighbor(i).getID());
+								this.User.userdata.removedOfflineContacts ++;
+							} 
+						}
+					}
+				} else {
+					this.User.userdata.offlineContacts.put(ID, 0);
+				}
 				continue;
 			}
-
-			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
+			
 			neighbor = user;
-			neighborList.add(neighbor);
 			if(neighbor ==null)
 				return;
+			neighborList.add(neighbor);
+			
 		}
 		int randomFriendPicker = (int) (Math.random() * 10);
-		if(node.isUp()){
-			initializeCircle(neighborList, linkable);
+		
+		
+		if(node.isUp()){	
+
 			oneHopAwayCalculations(neighborList);
-			neighborList = addingNewFriends(linkable, protocolID, neighborList);
+			//neighborList = addingNewFriends(linkable, protocolID, neighborList);
 			if(exp.equals("find")){
 				if(type.equals("push")){
 					disseminateInfoPush(neighborList);
@@ -132,17 +157,21 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				} else {
 					disseminateInfoPush(neighborList);
 				}
-				if(node.getID() != 0 && randomFriendPicker % node.getID() == 0)
-				findRandomFriends(linkable, protocolID);
+				if(node.getID() != 0 && (randomFriendPicker % node.getID() == 0)){
+					String location = locations[(int) (Math.random() * locations.length)];
+					this.User.locations.add(location);
+					//findRandomFriends(linkable, protocolID);
+				}
 			}
 		}
 	}
 
-	//Adding neighbors to friend circle
+/*	//Adding neighbors to friend circle
 	protected List initializeCircle(List neighborList, Linkable linkable){
 		this.User.size = linkable.degree();
 		for(int k = 0; k <neighborList.size(); k++){
 			SocialNetworkCalculations user = (SocialNetworkCalculations) neighborList.get(k);
+			//user.User.id = linkable.getNeighbor(k)
 			for(int j = 0; j< linkable.degree(); j++){
 				if(linkable.getNeighbor(j).isUp()){
 					long neighborID = linkable.getNeighbor(j).getID();
@@ -151,23 +180,23 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			}
 		}
 		return neighborList;
-	}
+	}*/
 	//Adding all the users which are one hop away or "mutual friends"
 	protected void oneHopAwayCalculations(List<SocialNetworkCalculations> neighborList){
 		//adding neighbors friends to one hop away, ignoring the ones the user already have
 		Collections.shuffle(neighborList);
 		for (int i = 0; i < neighborList.size()/4; i++){
 			SocialNetworkCalculations neighbor = neighborList.get(i);
-
+			
 			//Important step: putting the one hop away friend if not present otherwise updating its frequency
 
 			for(Iterator<Entry<Integer, Integer>> it1 = neighbor.User.userdata.neighbors.entrySet().iterator(); it1.hasNext(); ) {
 				Entry<Integer, Integer> entryPeer = it1.next();
 				if(!this.User.userdata.oneHopFriends.containsKey(entryPeer.getKey())){
-					this.User.userdata.oneHopFriends.put(entryPeer.getKey(), entryPeer.getValue());
-				}
-				else {
-					this.User.userdata.oneHopFriends.replace(entryPeer.getKey(), (entryPeer.getValue()+1));
+					this.User.userdata.oneHopFriends.put(entryPeer.getKey(), 0);
+				} else {
+					int freqVal = this.User.userdata.oneHopFriends.get(entryPeer.getKey());
+					this.User.userdata.oneHopFriends.replace(entryPeer.getKey(), (freqVal + 1));
 				}
 			}
 
@@ -175,7 +204,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			this.User.userdata.neighbors.forEach(this.User.userdata.oneHopFriends:: remove);				
 		}
 		//sorting them according their frequency
-		sortByValue(this.User.userdata.oneHopFriends);
+		//sortByValue(this.User.userdata.oneHopFriends);
+		MyComparator comp=new MyComparator(this.User.userdata.oneHopFriends);
+	    Map<Integer,Integer> temp1Hop = new TreeMap(comp);
+	    temp1Hop.putAll(this.User.userdata.oneHopFriends);
 		//trimming the one hop away list top 5 neighbors
 		int count = 0;
 		for(Iterator<Entry<Integer, Integer>> itOneHop = this.User.userdata.oneHopFriends.entrySet().iterator(); itOneHop.hasNext(); ) {
@@ -187,18 +219,14 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 	//adding new friends based on frequency factor
 	protected List<SocialNetworkCalculations> addingNewFriends(Linkable linkable, int protocolID, List<SocialNetworkCalculations> neighborList){
-
 		for(Iterator<Entry<Integer, Integer>> it = this.User.userdata.oneHopFriends.entrySet().iterator(); it.hasNext(); ) {
 			Entry<Integer, Integer> entryfind = it.next();
 			Node node = Network.get(entryfind.getKey());
 			if(node != null && node.isUp()){
 				SocialNetworkCalculations tempNode = (SocialNetworkCalculations) node.getProtocol(protocolID);
-
-				List tempList = tempNode.User.userdata.hobbies;
+				List<String> tempList = tempNode.User.userdata.hobbies;
 				tempList.retainAll(this.User.userdata.hobbies);
-				//System.out.println("Size is "+entryfind.getValue());
-				if(entryfind.getValue() > 0 && tempList.size() > 2){
-					//System.out.println("In here");
+				if(entryfind.getValue() > 2 && tempList.size() > 3){
 					linkable.addNeighbor(Network.get((Integer)entryfind.getKey()));
 					neighborList.add(tempNode);
 					this.User.userdata.neighbors.put(entryfind.getKey(), entryfind.getValue());
@@ -211,22 +239,27 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 	//Disseminate info to a neighbor using push strategy
 	protected void disseminateInfoPush(List neighborList){
-		//Take the list 
-		//System.out.println("Inside");
+
 		//Taking top half neighbors
 		Collections.shuffle(neighborList);
 		for (int i = 0; i < neighborList.size()/4; i++) {
 			SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
 			//update the value of interest of neighbor if less
-			if(friend.interest < this.interest){
-				friend.interest = this.interest;
-				friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
-			}
-			if(friend.User.flag == -1 && friend.interest == interest_value ){
-				friend.User.flag = -2;
-			}
-			if(this.User.flag == -1 && this.interest == interest_value ){
-				this.User.flag = -2;
+			
+			friend.User.userdata.totalMessages ++;
+			if(friend.interest != interest_value){
+				if(friend.interest < this.interest){
+					friend.interest = this.interest;
+					friend.User.userdata.hopCount = this.User.userdata.hopCount + 1;
+				}
+				if(friend.User.flag == -1 && friend.interest == interest_value ){
+					friend.User.flag = -2;
+				} 
+				if(this.User.flag == -1 && this.interest == interest_value ){
+					this.User.flag = -2;
+				}
+			} else {
+				friend.User.userdata.duplicatesMessage++;
 			}
 		}
 	}
@@ -234,11 +267,12 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	//Disseminate info to a neighbor using pull strategy
 	protected void disseminateInfoPull(List neighborList){
 		//Take the list 
-		//System.out.println("Inside");
 		//Taking top half neighbors
 		Collections.shuffle(neighborList);
 		for (int i = 0; i < neighborList.size()/4; i++) {
 			SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
+			friend.User.userdata.totalMessages ++;
+			if(friend.interest != interest_value){
 			//update the value of interest of neighbor if less
 			if(friend.interest > this.interest){
 				this.interest = friend.interest;
@@ -249,6 +283,9 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			}
 			if(this.User.flag == -1 && this.interest == interest_value ){
 				this.User.flag = -2;
+			}
+			} else {
+				friend.User.userdata.duplicatesMessage++;
 			}
 		}
 	}
@@ -261,6 +298,8 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		for (int i = 0; i < neighborList.size()/4; i++) {
 			SocialNetworkCalculations friend = (SocialNetworkCalculations) neighborList.get(i);
 			//update the value of interest of neighbor if less
+			friend.User.userdata.totalMessages ++;
+			if(friend.interest != interest_value){
 			if(friend.interest > this.interest){
 				this.interest = friend.interest;
 				this.User.userdata.hopCount = friend.User.userdata.hopCount + 1;
@@ -274,6 +313,9 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			if(this.User.flag == -1 && this.interest == interest_value ){
 				this.User.flag = -2;
 			}
+			} else {
+				friend.User.userdata.duplicatesMessage++;
+			}
 		}
 	}
 
@@ -285,7 +327,9 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			if(!this.User.userdata.neighbors.containsKey(randomID) && !this.User.userdata.oneHopFriends.containsKey(randomID)){
 				List tempList = tempNode.User.userdata.hobbies;
 				tempList.retainAll(this.User.userdata.hobbies);
-				if(tempList.size()>3){
+				List<String> locationList = tempNode.User.locations;
+				locationList.retainAll(this.User.locations);
+				if(tempList.size()>2 || locationList.size() > 1){
 					linkable.addNeighbor(Network.get(randomID));
 					this.User.userdata.neighbors.put(randomID, 0);
 					this.User.userdata.newRandomFriends ++;
@@ -352,5 +396,20 @@ class ValueComparator implements Comparator {
 		Comparable valueA = (Comparable) map.get(keyA);
 		Comparable valueB = (Comparable) map.get(keyB);
 		return valueB.compareTo(valueA);
+	}
+}
+
+class MyComparator implements Comparator {
+
+	Map map;
+
+	public MyComparator(Map map) {
+		this.map = map;
+	}
+
+	public int compare(Object o1, Object o2) {
+
+		return ((Integer) map.get(o2)).compareTo((Integer) map.get(o1));
+
 	}
 }

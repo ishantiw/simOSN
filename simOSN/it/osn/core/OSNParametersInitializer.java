@@ -1,7 +1,9 @@
 package it.osn.core;
 
 import peersim.config.Configuration;
+import peersim.config.FastConfig;
 import peersim.core.Control;
+import peersim.core.Linkable;
 import peersim.core.Network;
 
 /**
@@ -46,16 +48,28 @@ public class OSNParametersInitializer implements Control{
 		//friendCircle = new FriendCircle(userdata);
 	}
 
-	public FriendCircle circleInitializer(){
-
-		return null;
+	public void circleInitializer(Linkable linkable, SocialNetworkCalculations owner){
+			owner.User.size = linkable.degree();
+			//System.out.println("Friend circlee size"+owner.User.size);
+			for(int k = 0; k <linkable.degree(); k++){
+					if(linkable.getNeighbor(k).isUp()){
+						long neighborID = linkable.getNeighbor(k).getID();
+						owner.User.userdata.neighbors.put((int)neighborID, 0);
+						//System.out.println("Owner "+owner.User.id + "Neighbor "+neighborID);
+				}
+			}
+			
 	}
 
 	@Override
 	public boolean execute() {
 		boolean flag = false;
+		
 		for (int i = 0; i < Network.size(); i++) {
 			SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
+			int linkableID = FastConfig.getLinkable(pid);
+			Linkable linkable = (Linkable)  Network.get(i).getProtocol(linkableID);
+			//System.out.println(" state "+ Network.get(i).isUp());
 			int peak_interest = prot.interest_value;
 			//Initializing User Data class
 			UserData data = new UserData();
@@ -76,15 +90,18 @@ public class OSNParametersInitializer implements Control{
 			data.hobbies.add(hobbie4);
 			
 			FriendCircle circle = new FriendCircle(data);
+			
 			//prot.interest = val;
 			prot.setUser(circle);
-			
+			if(prot != null)
+				prot.User.id = i;
+			circleInitializer(linkable, prot);
 			//Assigning a node with a peak value and another node with a flag different than others to identify them specifically
-			if(i == 2){
+			if(i == 176){
 				prot.interest = peak_interest;
 				prot.User.flag = 1;
 				prot.User.userdata.connectionSpeed = val * 10 * (Math.random() * (max - min));
-			} else if(i == 3800){
+			} else if(i == 80){
 				prot.interest = val;
 				prot.User.flag = -1;
 				prot.User.userdata.connectionSpeed = val * 10 * (Math.random() * (max - min));

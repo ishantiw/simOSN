@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 public class UserData {
 	double connectionSpeed;
@@ -14,8 +15,13 @@ public class UserData {
 	int offlineUsers;
 	int newFriends;
 	int newRandomFriends;
+	int duplicatesMessage;
+	int totalMessages;
+	int removedOfflineContacts;
+	protected List<Integer> removedContactIDs = new ArrayList<Integer>();
+	protected Map<Integer, Integer> offlineContacts = new HashMap<>();
 	protected Map<Integer, Integer> neighbors = new HashMap<>();
-	protected List hobbies = new ArrayList();
+	protected List<String> hobbies = new ArrayList<String>();
 	protected Map<Integer, Integer> oneHopFriends= new HashMap<>();
 	public Map<Integer, Integer> getOneHopFriends() {
 		return oneHopFriends;

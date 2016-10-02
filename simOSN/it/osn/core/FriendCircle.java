@@ -1,9 +1,14 @@
 package it.osn.core;
+import java.util.ArrayList;
+import java.util.List;
+
 import peersim.core.Network;
 
 public class FriendCircle {
 	public int size;
 	public int flag;
+	protected int id;
+	protected List<String> locations = new ArrayList<String>();
 	public int getFlag() {
 		return flag;
 	}
