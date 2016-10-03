@@ -128,9 +128,9 @@ public class UserProfileDissemination implements Control{
 		System.out.println("Average duplicate messages on nodes is: " + averageDuplicate + ": Average Number of messages on a node: "+totalMessages/Network.size());
 		System.out.println("Total Offline contacts removed: "+totalRemovedOfflineContacts);
 		/* Printing a message when everyone received the message */
-		Example example = new Example();
+		SocialGraphDisplay display = new SocialGraphDisplay();
 		//if(displayStatus ==0)
-		example.displayGraph(nodeList);
+		display.displayGraph(nodeList);
 		if(stats.getMax() == stats.getMin()) {
 			System.err.println("Everyone Received the message at "+now);
 			

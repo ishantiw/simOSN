@@ -8,14 +8,12 @@ import org.graphstream.graph.implementations.*;
 
 
 
-public class Example {
+public class SocialGraphDisplay {
 
 	
 	public void displayGraph(HashMap<Integer, HashMap> nodeList) {
 		
 		//Configuration Parameters***********************
-		//int min_node = 20;
-		///int max_node = 60;
 		String graphName = "reThink";
 		//***********************************************
 		
