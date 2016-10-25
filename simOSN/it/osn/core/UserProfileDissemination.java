@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -80,6 +81,7 @@ public class UserProfileDissemination implements Control{
 		ArrayList<Integer> oneHopSize = new ArrayList<Integer>();
 		ArrayList<Double> avgConnectionSpeed = new ArrayList<Double>();
 		HashMap<Integer, HashMap> nodeList = new HashMap<>();
+		ArrayList<Integer> newNodeList = new ArrayList<Integer>();
 		int displayStatus = 0;
 		int totalOfflineNodes = 0;
 		int totalNewfriends = 0;
@@ -110,9 +112,9 @@ public class UserProfileDissemination implements Control{
 				hopsToReach = protocol.User.userdata.hopCount;
 			}
 			//System.out.println("Size of neighbor"+protocol.User.userdata.neighbors.size());
-			nodeList.put(i, (HashMap) protocol.User.userdata.neighbors);
+			nodeList.put(protocol.User.id, (HashMap) protocol.User.userdata.neighbors);
+			newNodeList.addAll(protocol.User.userdata.newFriendsList);
 		}
-		
 		
 		Date now = new Date(System.currentTimeMillis());
 		double avgFriendCircle = averageFriendCircle(circleSize);
@@ -130,7 +132,7 @@ public class UserProfileDissemination implements Control{
 		/* Printing a message when everyone received the message */
 		SocialGraphDisplay display = new SocialGraphDisplay();
 		//if(displayStatus ==0)
-		display.displayGraph(nodeList);
+		//display.displayGraph(nodeList, newNodeList);
 		if(stats.getMax() == stats.getMin()) {
 			System.err.println("Everyone Received the message at "+now);
 			

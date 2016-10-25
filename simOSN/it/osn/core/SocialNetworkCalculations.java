@@ -82,20 +82,19 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 
 	@Override
 	public void nextCycle(Node node, int protocolID) {
-		//System.out.println("Node is null "+node.isUp());
 		int linkableID = FastConfig.getLinkable(protocolID);
 		Linkable linkable = (Linkable) node.getProtocol(linkableID);
 		SocialNetworkCalculations neighbor = null;
-		//this.User.id = (int) node.getID();
 		boolean found = false;
 		String resultDisplay = null;
 		this.User.userdata.offlineUsers = 0;
 		List<SocialNetworkCalculations> neighborList = new ArrayList<SocialNetworkCalculations>();
-		//System.out.println("Degree "+linkable.degree());
+		
 		for (int i = 0; i < linkable.degree(); ++i) {
 			Node peer = linkable.getNeighbor(i);
 			this.User.size = linkable.degree();
 			SocialNetworkCalculations user = (SocialNetworkCalculations)peer.getProtocol(protocolID);
+			
 			// The selected peer could be inactive and then removing these inactive neighbors
 			if (!peer.isUp()){
 				this.User.userdata.offlineUsers ++;
@@ -109,7 +108,6 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 						}
 						if(entryPeer.getValue()>4) {
 							iterator.remove();
-							//linkable.getNeighbor(i).setFailState(1);
 							if(!this.User.userdata.removedContactIDs.contains((int)linkable.getNeighbor(i).getID())) {
 								this.User.userdata.removedContactIDs.add((int)linkable.getNeighbor(i).getID());
 								this.User.userdata.removedOfflineContacts ++;
@@ -134,7 +132,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		if(node.isUp()){	
 
 			oneHopAwayCalculations(neighborList);
-			//neighborList = addingNewFriends(linkable, protocolID, neighborList);
+			neighborList = addingNewFriends(linkable, protocolID, neighborList);
 			if(exp.equals("find")){
 				if(type.equals("push")){
 					disseminateInfoPush(neighborList);
@@ -160,27 +158,13 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				if(node.getID() != 0 && (randomFriendPicker % node.getID() == 0)){
 					String location = locations[(int) (Math.random() * locations.length)];
 					this.User.locations.add(location);
-					//findRandomFriends(linkable, protocolID);
+					findRandomFriends(linkable, protocolID);
 				}
 			}
 		}
 	}
 
-/*	//Adding neighbors to friend circle
-	protected List initializeCircle(List neighborList, Linkable linkable){
-		this.User.size = linkable.degree();
-		for(int k = 0; k <neighborList.size(); k++){
-			SocialNetworkCalculations user = (SocialNetworkCalculations) neighborList.get(k);
-			//user.User.id = linkable.getNeighbor(k)
-			for(int j = 0; j< linkable.degree(); j++){
-				if(linkable.getNeighbor(j).isUp()){
-					long neighborID = linkable.getNeighbor(j).getID();
-					user.User.userdata.neighbors.put((int) neighborID, 0);
-				} 
-			}
-		}
-		return neighborList;
-	}*/
+
 	//Adding all the users which are one hop away or "mutual friends"
 	protected void oneHopAwayCalculations(List<SocialNetworkCalculations> neighborList){
 		//adding neighbors friends to one hop away, ignoring the ones the user already have
@@ -226,10 +210,11 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				SocialNetworkCalculations tempNode = (SocialNetworkCalculations) node.getProtocol(protocolID);
 				List<String> tempList = tempNode.User.userdata.hobbies;
 				tempList.retainAll(this.User.userdata.hobbies);
-				if(entryfind.getValue() > 2 && tempList.size() > 3){
+				if(entryfind.getValue() > 2 && tempList.size() > 0){
 					linkable.addNeighbor(Network.get((Integer)entryfind.getKey()));
 					neighborList.add(tempNode);
 					this.User.userdata.neighbors.put(entryfind.getKey(), entryfind.getValue());
+					this.User.userdata.newFriendsList.add(entryfind.getKey());
 					it.remove();
 					this.User.userdata.newFriends ++;
 				} 
@@ -329,9 +314,10 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 				tempList.retainAll(this.User.userdata.hobbies);
 				List<String> locationList = tempNode.User.locations;
 				locationList.retainAll(this.User.locations);
-				if(tempList.size()>2 || locationList.size() > 1){
+				if(tempList.size() > 2 || locationList.size() > 1){
 					linkable.addNeighbor(Network.get(randomID));
 					this.User.userdata.neighbors.put(randomID, 0);
+					this.User.userdata.newFriendsList.add(randomID);
 					this.User.userdata.newRandomFriends ++;
 				}
 			}

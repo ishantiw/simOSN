@@ -83,11 +83,17 @@ public class OSNParametersInitializer implements Control{
 			String hobbie2 = hobbies[(int) (Math.random() * hobbies.length)];
 			String hobbie3 = hobbies[(int) (Math.random() * hobbies.length)];
 			String hobbie4 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie5 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie6 = hobbies[(int) (Math.random() * hobbies.length)];
+			String hobbie7 = hobbies[(int) (Math.random() * hobbies.length)];
 			//System.out.println("Hobiies"+hobbie1+" - "+hobbie2+" - "+hobbie3);
 			data.hobbies.add(hobbie1);
 			data.hobbies.add(hobbie2);
 			data.hobbies.add(hobbie3);
 			data.hobbies.add(hobbie4);
+			data.hobbies.add(hobbie5);
+			data.hobbies.add(hobbie6);
+			data.hobbies.add(hobbie7);
 			
 			FriendCircle circle = new FriendCircle(data);
 			

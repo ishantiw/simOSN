@@ -2,11 +2,11 @@
 
 #random.seed 1234567890
 
-simulation.cycles 2
+simulation.cycles 1000
 
 control.shf Shuffle
 
-network.size 50
+network.size 1000
  
 #protocol.lnk example.newscast.SimpleNewscast
 #protocol.lnk.cache 20
@@ -20,11 +20,11 @@ protocol.osn.peak_interest 999
 protocol.osn.oneHopSize 5
 protocol.osn.type push
 
-####Watts-Strogatz model The Watts–Strogatz model is a random graph generation model that produces graphs with small-world properties,###
+####Watts-Strogatz model The Wattsï¿½Strogatz model is a random graph generation model that produces graphs with small-world properties,###
 #### including short average path lengths and high clustering.###
 init.rnd WireFromFile
 init.rnd.protocol lnk
-init.rnd.file C:\Users\IshanHP\Desktop\facebook\0edges.txt
+init.rnd.file /Users/Ishan/Documents/workspace/simOSN/example/facebookGraph.txt
 #The probability of re-wiring each
 #init.rnd.beta 0.5
 #init.rnd.k 2
@@ -60,9 +60,9 @@ include.init rnd pinit
 control.ao it.osn.core.UserProfileDissemination
 control.ao.protocol osn
 
-#control.dnet DynamicNetwork
-#control.dnet.add -50
-#control.dnet.minsize 1400
-#control.dnet.from 2
-#control.dnet.until 8
+control.dnet DynamicNetwork
+control.dnet.add -50
+control.dnet.minsize 1400
+control.dnet.from 2
+control.dnet.until 8
  

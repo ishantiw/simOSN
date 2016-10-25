@@ -23,6 +23,7 @@ public class UserData {
 	protected Map<Integer, Integer> neighbors = new HashMap<>();
 	protected List<String> hobbies = new ArrayList<String>();
 	protected Map<Integer, Integer> oneHopFriends= new HashMap<>();
+	protected List<Integer> newFriendsList = new ArrayList<Integer>();
 	public Map<Integer, Integer> getOneHopFriends() {
 		return oneHopFriends;
 	}
