@@ -116,8 +116,8 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 			newNodesJoiningInitializer(linkable);
 		}
 		SocialNetworkCalculations neighbor = null;
-		boolean found = false;
-		String resultDisplay = null;
+
+
 		this.User.userdata.offlineUsers = 0;
 		List<SocialNetworkCalculations> neighborList = new ArrayList<SocialNetworkCalculations>();
 		for (int i = 0; i < linkable.degree(); ++i) {
@@ -202,6 +202,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// Adding all the users which are one hop away or "mutual friends"
+	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 	protected void oneHopAwayCalculations(List<SocialNetworkCalculations> neighborList) {
 		// adding neighbors friends to one hop away, ignoring the ones the user
 		// already have
@@ -243,6 +244,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// adding new friends based on frequency factor
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected List<SocialNetworkCalculations> addingNewFriends(Linkable linkable, int protocolID,
 			List<SocialNetworkCalculations> neighborList) {
 		for (Iterator<Entry<Integer, Integer>> it = this.User.userdata.oneHopFriends.entrySet().iterator(); it
@@ -275,6 +277,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// Disseminate info to a neighbor using push strategy
+	@SuppressWarnings("rawtypes")
 	protected void disseminateInfoPush(List neighborList) {
 
 		// Taking top half neighbors
@@ -300,6 +303,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// Disseminate info to a neighbor using pull strategy
+	@SuppressWarnings("rawtypes")
 	protected void disseminateInfoPull(List neighborList) {
 		// Take the list
 		// Taking top half neighbors
@@ -326,6 +330,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// Disseminate info to a neighbor using pushpull strategy
+	@SuppressWarnings("rawtypes")
 	protected void disseminateInfoPushPull(List neighborList) {
 		// Take the list
 		// System.out.println("Inside");
@@ -354,6 +359,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void findRandomFriends(Linkable linkable, int protocolID) {
 		int randomID = (int) (Math.random() * Network.size());
 		Node randomFriend = Network.get(randomID);
@@ -385,6 +391,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 
 	// Disseminating information based on the connection speed in the friend
 	// circle
+	@SuppressWarnings("rawtypes")
 	protected void disseminateBasedOnSpeed(List neighborList) {
 		// Take the list
 		// Taking top half neighbors
@@ -412,6 +419,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	}
 
 	// calculating the average connection speed in the friend circle
+	@SuppressWarnings("rawtypes")
 	protected double averageConnectionSpeed(List neighborList) {
 		double averageSpeed = 0;
 		int size = neighborList.size();
@@ -425,7 +433,7 @@ public class SocialNetworkCalculations extends SingleValueHolder implements CDPr
 	
 	
 	protected void newNodesJoiningInitializer(Linkable linkable) {
-		int peak_interest = this.interest_value;
+		
 		UserData data = new UserData();
 		int val = 0;
 		String hobbie1 = hobbies[(int) (Math.random() * hobbies.length)];
@@ -480,6 +488,7 @@ class ValueComparator implements Comparator {
 	}
 }
 
+@SuppressWarnings("rawtypes")
 class MyComparator implements Comparator {
 
 	Map map;

@@ -1,22 +1,12 @@
 package it.osn.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
 
-import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
 import peersim.core.Control;
 import peersim.core.Network;
-import peersim.core.OverlayGraph;
-import peersim.graph.Graph;
-import peersim.graph.GraphAlgorithms;
-import peersim.graph.GraphFactory;
-import peersim.graph.UndirectedGraph;
 import peersim.util.IncrementalStats;
 
 /**
@@ -38,6 +28,11 @@ public class UserProfileDissemination implements Control {
 	 * The protocol to operate on.
 	 */
 	private static final String PAR_PROT = "protocol";
+	/**
+	 * Number of cycles till the graph will be displayed.
+	 */
+	private static final String PAR_DISPLAY_GRAPH ="displayGraphNumber";
+	
 	/////////////////////////////////////////////////////////////////////////
 	// Fields
 	/////////////////////////////////////////////////////////////////////////
@@ -47,13 +42,18 @@ public class UserProfileDissemination implements Control {
 	private final String name;
 	/** Protocol identifier, */
 	private final int pid;
-
+	/**
+	 * Number of cycles till the graph will be displayed identifier
+	 */
+	private final int displayGraphNumber;
+	private static int cycles;
 	/////////////////////////////////////////////////////////////////////////
 	// Constructor
 	/////////////////////////////////////////////////////////////////////////
 	public UserProfileDissemination(String name) {
 		this.name = name;
 		pid = Configuration.getPid(name + "." + PAR_PROT);
+		displayGraphNumber = Configuration.getInt(name + "." + PAR_DISPLAY_GRAPH);
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,8 @@ public class UserProfileDissemination implements Control {
 		return averageconnectionSpeed / noOfNodes;
 	}
 
-	public boolean execute() {
+	@SuppressWarnings({ "unused", "rawtypes" })
+	public boolean execute() {cycles ++;
 		IncrementalStats stats = new IncrementalStats();
 		IncrementalStats graphStats = new IncrementalStats();
 		ArrayList<Integer> circleSize = new ArrayList<Integer>();
@@ -146,8 +147,9 @@ public class UserProfileDissemination implements Control {
 		System.out.println("Total Offline contacts removed: " + totalRemovedOfflineContacts / 8);
 		/* Printing a message when everyone received the message */
 		SocialGraphDisplay display = new SocialGraphDisplay();
-
-		// display.displayGraph(nodeList, newNodeList);
+		/* displayGraphNumber*/
+		if(cycles < displayGraphNumber && cycles <20)
+			display.displayGraph(nodeList, newNodeList);
 		if (stats.getMax() == stats.getMin()) {
 			System.err.println("Everyone Received the message at " + now);
 

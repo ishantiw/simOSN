@@ -6,7 +6,7 @@ simulation.cycles 20
 
 control.shf Shuffle
 
-network.size 1000000
+network.size 4039
  
 #protocol.lnk example.newscast.SimpleNewscast
 #protocol.lnk.cache 20
@@ -21,16 +21,16 @@ protocol.osn.oneHopSize 20
 protocol.osn.type pushpull
 protocol.osn.peerListSize 10
 
-####Watts-Strogatz model The Watts�Strogatz model is a random graph generation model that produces graphs with small-world properties,###
+####Watts-Strogatz model The Watts & Strogatz model is a random graph generation model that produces graphs with small-world properties,###
 #### including short average path lengths and high clustering.###
-#init.rnd WireFromFile
-init.rnd WireWS
+init.rnd WireFromFile
+#init.rnd WireWS
 init.rnd.protocol lnk
-#init.rnd.file /Users/Ishan/Documents/workspace/simOSN/example/facebookGraph.txt
+init.rnd.file example/facebookGraph.txt
 #The probability of re-wiring each
-init.rnd.beta 0.7
-init.rnd.k 5
-init.rnd.undir false
+#init.rnd.beta 0.7
+#init.rnd.k 5
+#init.rnd.undir false
 
 #init.pk example.aggregation.PeakDistributionInitializer
 #init.pk.value 10000
@@ -59,6 +59,7 @@ include.init rnd pinit
 ###Profile dissemination 
 control.ao it.osn.core.UserProfileDissemination
 control.ao.protocol osn
+control.ao.displayGraphNumber 5
 
 #control.ao peersim.reports.Clustering
 #control.ao.protocol lnk

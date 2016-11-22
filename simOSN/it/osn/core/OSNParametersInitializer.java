@@ -61,7 +61,7 @@ public class OSNParametersInitializer implements Control {
 
 	@Override
 	public boolean execute() {
-		boolean flag = false;
+
 		/* Choosing two random nodes to find each other*/
 		Double firstNode = Math.random() * Network.size();
 		Integer firstNodeID = firstNode.intValue();

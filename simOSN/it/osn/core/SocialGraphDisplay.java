@@ -24,6 +24,7 @@ import org.graphstream.graph.implementations.*;
 
 public class SocialGraphDisplay {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void displayGraph(HashMap<Integer, HashMap> nodeList, List<Integer> newNodeList) {
 
 		// Configuration Parameters***********************

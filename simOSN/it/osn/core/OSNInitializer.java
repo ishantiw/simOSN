@@ -51,7 +51,7 @@ public class OSNInitializer implements Control {
 
 	@Override
 	public boolean execute() {
-		boolean flag = false;
+
 		for (int i = 0; i < Network.size(); i++) {
 			SocialNetworkCalculations prot = (SocialNetworkCalculations) Network.get(i).getProtocol(pid);
 			// Linkable linkable = (Linkable)Network.get(i).getProtocol(pid);
