@@ -6,7 +6,7 @@ simulation.cycles 20
 
 control.shf Shuffle
 
-network.size 5000
+network.size 4039
  
 #protocol.lnk example.newscast.SimpleNewscast
 #protocol.lnk.cache 20
@@ -15,24 +15,31 @@ protocol.lnk IdleProtocol
 #Instantiates and update friend circle for nodes and compares the values with its neighbors, sets the greater value to neighbor 
 protocol.osn it.osn.core.SocialNetworkCalculations
 protocol.osn.linkable lnk
-protocol.osn.exp find
-protocol.osn.peak_interest 888
-protocol.osn.oneHopSize 5
-protocol.osn.type pull
+protocol.osn.exp random
+protocol.osn.peak_interest 999
+protocol.osn.oneHopSize 20
+protocol.osn.type pushpull
+protocol.osn.peerListSize 10
 
-init.rnd WireKOut
+####Watts-Strogatz model The Watts & Strogatz model is a random graph generation model that produces graphs with small-world properties,###
+#### including short average path lengths and high clustering.###
+init.rnd WireFromFile
+#init.rnd WireWS
 init.rnd.protocol lnk
-init.rnd.k 10
-init.rnd.undir true
+init.rnd.file example/facebookGraph.txt
+#The probability of re-wiring each
+#init.rnd.beta 0.7
+#init.rnd.k 5
+#init.rnd.undir false
 
-init.pk example.aggregation.PeakDistributionInitializer
-init.pk.value 10000
-init.pk.protocol osn
+#init.pk example.aggregation.PeakDistributionInitializer
+#init.pk.value 10000
+#init.pk.protocol osn
 
-init.ld LinearDistribution
-init.ld.protocol osn
-init.ld.max 100
-init.ld.min 1
+#init.ld LinearDistribution
+#init.ld.protocol osn
+#init.ld.max 100
+#init.ld.min 1
 
 ###Using OSN Initializer
 init.oinit it.osn.core.OSNInitializer
@@ -41,21 +48,39 @@ init.oinit.max 10
 init.oinit.min 2
 
 ###Using OSN Parameters Initializer
-init.oinit it.osn.core.OSNParametersInitializer
-init.oinit.protocol osn
-init.oinit.max 10
-init.oinit.min 2
+init.pinit it.osn.core.OSNParametersInitializer
+init.pinit.protocol osn
+init.pinit.max 10
+init.pinit.min 0
 
 # you can change this to include the linear or peak initializer instead of OSNInitializer
-include.init rnd oinit
+include.init rnd pinit
 
 ###Profile dissemination 
 control.ao it.osn.core.UserProfileDissemination
 control.ao.protocol osn
+control.ao.displayGraphNumber 5
+
+#control.ao peersim.reports.Clustering
+#control.ao.protocol lnk
+#control.ao.undir
+#control.ao.n 50
+
+
+#control.ao peersim.reports.GraphStats
+#control.ao.protocol lnk
+#control.ao.undir
+#control.ao.nl 1000
+#control.ao.nc 50
+
+#control.ao peersim.reports.ConnectivityObserver
+#control.ao.protocol lnk
+#control.ao.stats true
+#control.ao.type scc
 
 #control.dnet DynamicNetwork
 #control.dnet.add -50
-#control.dnet.minsize 45000
+#control.dnet.minsize 1400
 #control.dnet.from 2
 #control.dnet.until 8
  
